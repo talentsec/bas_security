@@ -1,0 +1,13 @@
+.gray-back input{
+  background-color: #F7F8FA !important;
+}
+
+.gray-back .ant-input-affix-wrapper {
+  background-color: #F7F8FA !important;
+  border: 1px solid #F7F8FA;
+}
+
+.gray-back .ant-select-selector {
+  background-color: #F7F8FA !important;
+  border: 1px solid #F7F8FA !important;
+}

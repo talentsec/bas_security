@@ -1,11 +1,13 @@
-import React, { useState, useCallback } from "react"
-import { Breadcrumb, Input, Select, Drawer, Button, Tooltip, Table, Spin } from "antd"
-import { Icon } from "@iconify/react"
-import SearchIcon from "@iconify/icons-icon-park-outline/search"
-import { PlusOutlined, CloseOutlined, SelectOutlined } from "@ant-design/icons"
-import TemplateIcon from "@/assets/template.svg"
-import TemplateCard from "./TemplateCard"
-import type { ColumnsType } from "antd/es/table"
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { Breadcrumb, Input, Select, Drawer, Button, Tooltip, Table, Spin } from "antd";
+import { Icon } from "@iconify/react";
+import SearchIcon from "@iconify/icons-icon-park-outline/search";
+import { PlusOutlined, CloseOutlined, SelectOutlined } from "@ant-design/icons";
+import TemplateIcon from "@/assets/template.svg";
+import TemplateCard from "./TemplateCard";
+import type { ColumnsType } from "antd/es/table";
+import { ModeType } from "@/pages/job/detail";
 
 const mockData = {
   title: "主机命令-使用保留名称和备用数爽肤水大是大非上发生的",
@@ -17,18 +19,18 @@ const mockData = {
   scene: "2",
   desc: "此验证动作还原了AI攻防机器人使用称为文件Windows NT 文件系统功能和一个保留的文件名来隐藏可执行文件。与使用备用数据流(ADS)的其他验证验证动作不…",
   link: ""
-}
+};
 
 const mockList = [
   "Log4Shell (CVE-2021-44228) 基于签名的网页请求（多个负载）L基于签名的网页请求（多个负载）Lo…",
   "Log4Shell (CVE-2021-44228) 基于签名的网页请求（多个负载）Lo…"
-]
+];
 
 interface DataType {
-  key: React.Key
-  name: string
-  age: number
-  address: string
+  key: React.Key;
+  name: string;
+  age: number;
+  address: string;
 }
 
 const columns: ColumnsType<DataType> = [
@@ -36,24 +38,24 @@ const columns: ColumnsType<DataType> = [
     title: "关联任务",
     dataIndex: "name",
     render: record => {
-      return <span className="text-xs">{record}</span>
+      return <span className="text-xs">{record}</span>;
     }
   },
   {
     title: "最后运行时间",
     dataIndex: "age",
     render: record => {
-      return <span className="text-xs">{record}</span>
+      return <span className="text-xs">{record}</span>;
     }
   },
   {
     title: "防御状态",
     dataIndex: "address",
     render: record => {
-      return <span className="text-xs">{record}</span>
+      return <span className="text-xs">{record}</span>;
     }
   }
-]
+];
 
 const data: DataType[] = [
   {
@@ -74,7 +76,7 @@ const data: DataType[] = [
     age: 32,
     address: "Sidney No. 1 Lake Park"
   }
-]
+];
 
 const DrawerTitle = ({ data, close }: any) => {
   return (
@@ -92,21 +94,28 @@ const DrawerTitle = ({ data, close }: any) => {
         <CloseOutlined className="text-sm text-gray-500 cursor-pointer hover:text-blue-600" />
       </span>
     </div>
-  )
-}
+  );
+};
 
 export default function Template() {
-  const [detailDisplay, setDetailDisplay] = useState(false)
-  const [curTemplate, setCurTemplate] = useState(null)
+  const [detailDisplay, setDetailDisplay] = useState(false);
+  const [curTemplate, setCurTemplate] = useState<any>(null);
+  const Navigater = useNavigate();
 
   const toggleDetail = useCallback((template: any) => {
-    setCurTemplate(template)
-    setDetailDisplay(true)
-  }, [])
+    setCurTemplate(template);
+    setDetailDisplay(true);
+  }, []);
 
   const closeDetail = () => {
-    setDetailDisplay(false)
-  }
+    setDetailDisplay(false);
+  };
+
+  const createJob = () => {
+    if (curTemplate) {
+      Navigater(`/app/job/detail?o=${ModeType.CREATE}&id=${curTemplate.id}`);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -144,9 +153,9 @@ export default function Template() {
             />
           </span>
         </section>
-        <section className="flex items-center bg-gray-50 w-48 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer">
+        <section className="flex items-center bg-gray-50 w-60 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer">
           <img src={TemplateIcon} />
-          <span className="mr-10 ml-2">新建任务</span>
+          <span className="mr-10 ml-2">创建自定义模版</span>
           <PlusOutlined />
         </section>
         <section>
@@ -164,7 +173,9 @@ export default function Template() {
             <Button onClick={closeDetail} className="mr-2">
               取消
             </Button>
-            <Button type="primary">创建任务</Button>
+            <Button type="primary" onClick={createJob}>
+              创建任务
+            </Button>
           </span>
         }
         open={detailDisplay}
@@ -186,15 +197,21 @@ export default function Template() {
                     <span className="flex-1 ellipsis mr-8 text-xs">{item}</span>
                     <SelectOutlined className="cursor-pointer hover:text-blue-500" />
                   </div>
-                )
+                );
               })}
             </section>
             <Table columns={columns} dataSource={data} size="small" pagination={false} className="mt-8" />
+            {data.length > 5 ? (
+              <div className="flex justify-center items-center text-sm mt-4">
+                <span className="text-gray-300">显示最近5条任务</span>
+                <Button type="link">查看全部任务</Button>
+              </div>
+            ) : null}
           </div>
         ) : (
           <Spin />
         )}
       </Drawer>
     </div>
-  )
+  );
 }

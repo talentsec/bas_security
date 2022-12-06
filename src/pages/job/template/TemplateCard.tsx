@@ -1,20 +1,20 @@
-import React from "react"
-import { MoreOutlined, FileSearchOutlined } from "@ant-design/icons"
-import { Button } from "antd"
+import React from "react";
+import { MoreOutlined, FileSearchOutlined } from "@ant-design/icons";
+import { Button } from "antd";
 
 export interface TemplateCardProps {
   data: {
-    title: string
-    image: string
-    auther: string
-    time: string
-    tag: string
-    count: string
-    scene: string
-    desc: string
-  }
+    title: string;
+    image: string;
+    auther: string;
+    time: string;
+    tag: string;
+    count: string;
+    scene: string;
+    desc: string;
+  };
   // eslint-disable-next-line @typescript-eslint/ban-types
-  toggleDetail: Function
+  toggleDetail: Function;
 }
 
 export default function TemplateCard({ data, toggleDetail }: TemplateCardProps) {
@@ -56,5 +56,5 @@ export default function TemplateCard({ data, toggleDetail }: TemplateCardProps) 
         </Button>
       </section>
     </div>
-  )
+  );
 }

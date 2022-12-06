@@ -1,9 +1,9 @@
-import React, { useState } from "react"
-import { Menu } from "antd"
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from "@ant-design/icons"
-import type { MenuProps } from "antd"
+import React, { useState } from "react";
+import { Menu } from "antd";
+import { AppstoreOutlined, MailOutlined, SettingOutlined } from "@ant-design/icons";
+import type { MenuProps } from "antd";
 
-type MenuItem = Required<MenuProps>["items"][number]
+type MenuItem = Required<MenuProps>["items"][number];
 
 function getItem(
   label: React.ReactNode,
@@ -18,7 +18,7 @@ function getItem(
     children,
     label,
     type
-  } as MenuItem
+  } as MenuItem;
 }
 
 const items: MenuProps["items"] = [
@@ -27,18 +27,18 @@ const items: MenuProps["items"] = [
   getItem("Navigation Two", "sub2", <AppstoreOutlined />),
 
   getItem("Navigation Three", "sub4", <SettingOutlined />)
-]
+];
 
 type MainLayoutProps = {
-  children: React.ReactNode
-}
+  children: React.ReactNode;
+};
 
 export default function Layout({ children }: MainLayoutProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const onClick: MenuProps["onClick"] = e => {
-    console.log("click ", e)
-  }
+    console.log("click ", e);
+  };
 
   return (
     <div className="w-screen h-screen ">
@@ -74,5 +74,5 @@ export default function Layout({ children }: MainLayoutProps) {
         <div className="flex-1">{children}</div>
       </section>
     </div>
-  )
+  );
 }

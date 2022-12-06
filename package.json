@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -49,5 +50,17 @@
     "tailwindcss": "^3.2.4",
     "typescript": "*",
     "vite": "^3.2.3"
+  },
+  "lint-staged": {
+    "*.js(x)": [
+      "eslint --cache --fix",
+      "prettier --write",
+      "git add"
+    ],
+    "*.ts(x)": [
+      "eslint --cache --fix",
+      "prettier --parser=typescript --write",
+      "git add"
+    ]
   }
 }

@@ -1,10 +1,11 @@
-import React, { Suspense } from "react"
-import { Outlet } from "react-router-dom"
-const Layout = React.lazy(() => import("@/components/Layout"))
-const Template = React.lazy(() => import("@/pages/template"))
-const Job = React.lazy(() => import("@/pages/job"))
-const JobList = React.lazy(() => import("@/pages/job/list"))
-const JobTemplate = React.lazy(() => import("@/pages/job/template"))
+import React, { Suspense } from "react";
+import { Outlet } from "react-router-dom";
+const Layout = React.lazy(() => import("@/components/Layout"));
+const Template = React.lazy(() => import("@/pages/template"));
+const Job = React.lazy(() => import("@/pages/job"));
+const JobList = React.lazy(() => import("@/pages/job/list"));
+const JobTemplate = React.lazy(() => import("@/pages/job/template"));
+const JobDetail = React.lazy(() => import("@/pages/job/detail"));
 
 const App = () => {
   return (
@@ -13,8 +14,8 @@ const App = () => {
         <Outlet />
       </Suspense>
     </Layout>
-  )
-}
+  );
+};
 
 export const protectedRoutes = [
   {
@@ -36,9 +37,13 @@ export const protectedRoutes = [
           {
             path: "template",
             element: <JobTemplate></JobTemplate>
+          },
+          {
+            path: "detail",
+            element: <JobDetail></JobDetail>
           }
         ]
       }
     ]
   }
-]
+];

@@ -1,18 +1,18 @@
-import React from "react"
-import { Breadcrumb, Input, Select } from "antd"
-import { PlusOutlined, ProfileFilled } from "@ant-design/icons"
-import { Icon } from "@iconify/react"
-import SearchIcon from "@iconify/icons-icon-park-outline/search"
-
-import { Space, Table, Tag } from "antd"
-import type { ColumnsType } from "antd/es/table"
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Breadcrumb, Input, Select, Modal, Button } from "antd";
+import { PlusOutlined, ProfileFilled } from "@ant-design/icons";
+import { Icon } from "@iconify/react";
+import SearchIcon from "@iconify/icons-icon-park-outline/search";
+import { Space, Table } from "antd";
+import type { ColumnsType } from "antd/es/table";
 
 interface DataType {
-  key: string
-  name: string
-  age: number
-  address: string
-  tags: string[]
+  key: string;
+  name: string;
+  age: number;
+  address: string;
+  tags: string[];
 }
 
 const columns: ColumnsType<DataType> = [
@@ -73,7 +73,7 @@ const columns: ColumnsType<DataType> = [
       </Space>
     )
   }
-]
+];
 
 const data: DataType[] = [
   {
@@ -97,9 +97,20 @@ const data: DataType[] = [
     address: "Sidney No. 1 Lake Park",
     tags: ["cool", "teacher"]
   }
-]
+];
 
 export default function JobList() {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const Navigater = useNavigate();
+
+  const toggleModal = (): void => {
+    setIsModalOpen(!isModalOpen);
+  };
+
+  const jumpToTemplate = () => {
+    Navigater("/app/job/template");
+  };
+
   return (
     <div className="h-full flex flex-col">
       <Breadcrumb>
@@ -156,7 +167,10 @@ export default function JobList() {
             />
           </span>
         </section>
-        <section className="flex items-center bg-gray-50 w-48 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer">
+        <section
+          className="flex items-center bg-gray-50 w-48 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer"
+          onClick={toggleModal}
+        >
           <ProfileFilled className="text-orange-500 " />
           <span className="mr-10 ml-2">新建任务</span>
           <PlusOutlined />
@@ -165,6 +179,22 @@ export default function JobList() {
           <Table size="small" columns={columns} dataSource={data} />
         </section>
       </div>
+      <Modal
+        title="创建任务"
+        open={isModalOpen}
+        onCancel={toggleModal}
+        footer={
+          <div>
+            <Button>自定义</Button>
+            <Button type="primary" onClick={jumpToTemplate}>
+              选择模版
+            </Button>
+          </div>
+        }
+      >
+        <section className="mt-12 mb-4 font-bold">请选择创建任务的方式</section>
+        <section className="mb-14 text-gray-500 text-sm">选择现有模版进行任务创建或自定义模版进行任务创建？</section>
+      </Modal>
     </div>
-  )
+  );
 }

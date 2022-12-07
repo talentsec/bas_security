@@ -1,11 +1,11 @@
 import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 const Layout = React.lazy(() => import("@/components/Layout"));
-const Template = React.lazy(() => import("@/pages/template"));
-const Job = React.lazy(() => import("@/pages/job"));
-const JobList = React.lazy(() => import("@/pages/job/list"));
-const JobTemplate = React.lazy(() => import("@/pages/job/template"));
-const JobDetail = React.lazy(() => import("@/pages/job/detail"));
+const My = React.lazy(() => import("@/pages/my"));
+const MyVector = React.lazy(() => import("@/pages/my/vector"));
+const MyScene = React.lazy(() => import("@/pages/my/scene"));
+const MyJob = React.lazy(() => import("@/pages/my/job"));
+const All = React.lazy(() => import("@/pages/all"));
 
 const App = () => {
   return (
@@ -23,26 +23,26 @@ export const protectedRoutes = [
     element: <App />,
     children: [
       {
-        path: "template",
-        element: <Template />
-      },
-      {
-        path: "job",
-        element: <Job />,
+        path: "my",
+        element: <My />,
         children: [
           {
-            path: "list",
-            element: <JobList></JobList>
+            path: "vector",
+            element: <MyVector></MyVector>
           },
           {
-            path: "template",
-            element: <JobTemplate></JobTemplate>
+            path: "scene",
+            element: <MyScene></MyScene>
           },
           {
-            path: "detail",
-            element: <JobDetail></JobDetail>
+            path: "job",
+            element: <MyJob></MyJob>
           }
         ]
+      },
+      {
+        path: "all",
+        element: <All />
       }
     ]
   }

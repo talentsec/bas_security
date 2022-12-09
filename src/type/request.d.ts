@@ -30,6 +30,80 @@ declare namespace RequestType {
     captchaId: string;
     value: string;
   }
+  interface CreateVector {
+    attCkCategory: string;
+    attCkID: string;
+    categoryID: string;
+    execMode: "LOCAL";
+    name: string;
+    platform: string;
+    remark: string;
+    roleType: "NORMAL";
+    scenarios: {
+      inputConfig: {
+        additionalProp1: any;
+      };
+      os: string;
+      osArch: [string];
+      osVersion: [string];
+      outputConfig: {
+        additionalProp1: any;
+      };
+      url: string;
+    }[];
+    targetRangeURL: string;
+    version: string;
+  }
+  interface UpdateVector {
+    attCkCategory: string;
+    attCkID: string;
+    category_id: string;
+    execMode: "LOCAL";
+    platform: string;
+    remark: string;
+    roleType: "NORMAL";
+    scenarios: [
+      {
+        inputConfig: {
+          additionalProp1: unknown;
+        };
+        os: string;
+        osArch: [string];
+        osVersion: [string];
+        outputConfig: {
+          additionalProp1: unknown;
+        };
+        url: string;
+      }
+    ];
+    targetRangeURL: string;
+    vectorID: number;
+    version: string;
+  }
+  interface UpdateVectorVersion {
+    attCkCategory: string;
+    attCkID: string;
+    category_id: string;
+    execMode: "LOCAL";
+    platform: string;
+    remark: string;
+    roleType: "NORMAL";
+    scenarios: [
+      {
+        inputConfig: {
+          additionalProp1: unknown;
+        };
+        os: string;
+        osArch: [string];
+        osVersion: [string];
+        outputConfig: {
+          additionalProp1: unknown;
+        };
+        url: string;
+      }
+    ];
+    targetRangeURL: string;
+  }
 }
 
 declare namespace ResponseType {
@@ -55,10 +129,45 @@ declare namespace ResponseType {
     captchaId: string;
     imageUrl: string;
   }>;
+
+  type GetVectorList = ResponseWrapper<
+    PageWrapper<{
+      createdBy: number;
+      createdName: string;
+      id: number;
+      name: string;
+      pubNum: number;
+      pubTime: string;
+      usedNum: number;
+      version: string;
+    }>
+  >;
+
+  type GetMyVectorList = ResponseWrapper<
+    PageWrapper<{
+      id: number;
+      name: string;
+      pubNum: number;
+      versionNum: number;
+    }>
+  >;
 }
 
 type ResponseWrapper<T> = {
   code: number;
   data?: T;
   message: string;
+};
+
+type PageWrapper<T> = {
+  content: T[];
+  limit: number;
+  page: number;
+  total: number;
+  totalPage: number;
+};
+
+declare type PageData = {
+  limit: number;
+  page: number;
 };

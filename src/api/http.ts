@@ -28,7 +28,7 @@ basHttp.interceptors.response.use(
         if (response.data.code === 0) {
           return response.data;
         } else {
-          message.error(response.data.message);
+          message.error(response.data.msg);
           return response.data;
         }
       case 401:

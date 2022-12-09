@@ -1,13 +1,8 @@
 import React from "react";
-import { Button, Form, Input, message } from "antd";
-import { useMutation, useQuery } from "react-query";
-import { useNavigate } from "react-router-dom";
-import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { setLoginState } from "@/store/slices/account";
-import RegisterPannel from "./RegisterPannel";
-import { GetCaptcha, Login as LoginApi, Register, VerifyCaptcha } from "@/api/account";
+import { Button, Form, Input } from "antd";
+import { useMutation } from "react-query";
+import { Login as LoginApi } from "@/api/account";
 import { RequestStateEnum } from "@/type/api";
-import BackImg from "@/assets/login_back.svg";
 
 interface LoginPannelPropsType {
   jumpToRegister: () => void;

@@ -41,8 +41,6 @@ const BaseLayout = ({ children }: LayoutProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [initPath] = useState(Location.pathname);
 
-  console.log(Location);
-
   const handleSelectedChanged = ({ key }: any) => {
     Navigator(`${key}`);
   };

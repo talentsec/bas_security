@@ -18,6 +18,7 @@ export default defineConfig({
     }
   },
   server: {
+    hmr: true,
     proxy: {
       "/api": {
         target: "http://10.10.10.242:8051/",

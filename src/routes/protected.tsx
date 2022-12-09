@@ -2,10 +2,11 @@ import React, { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 const Layout = React.lazy(() => import("@/components/Layout"));
 const My = React.lazy(() => import("@/pages/my"));
-const MyVector = React.lazy(() => import("@/pages/my/vector"));
-const MyScene = React.lazy(() => import("@/pages/my/scene"));
-const MyJob = React.lazy(() => import("@/pages/my/job"));
-const All = React.lazy(() => import("@/pages/all"));
+const MyVector = React.lazy(() => import("@/pages/my/vector/index"));
+// const MyScene = React.lazy(() => import("@/pages/my/scene/index"));
+import MyScene from "@/pages/my/scene";
+const MyJob = React.lazy(() => import("@/pages/my/job/index"));
+const All = React.lazy(() => import("@/pages/all/index"));
 
 const App = () => {
   return (

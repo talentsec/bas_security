@@ -1,6 +1,6 @@
 declare namespace RequestType {
   interface Login {
-    app: "bas_manage";
+    app: "bas_security";
     name: string;
     password: string;
   }

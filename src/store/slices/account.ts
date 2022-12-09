@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
+import storage from "@/utils/storage";
 
 interface AccountState {
   hasLogin: boolean;
@@ -7,7 +8,7 @@ interface AccountState {
 }
 
 const initialState: AccountState = {
-  hasLogin: false,
+  hasLogin: storage.getToken()?.expiration > new Date().getTime(),
   user: null
 };
 
@@ -19,7 +20,6 @@ const AccountSlice = createSlice({
       state.user = Action.payload;
     },
     setLoginState: (state, Action: PayloadAction<boolean>) => {
-      console.log("改变了", Action.payload);
       state.hasLogin = Action.payload;
     }
   }

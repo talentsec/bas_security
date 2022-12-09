@@ -12,7 +12,7 @@ basHttp.interceptors.request.use(
   async function (config) {
     config.baseURL = "/api";
     // config.timeout = 3000
-    config.headers.Authorization = getAsmToken();
+    // config.headers.Authorization = getAsmToken();
 
     return config;
   },
@@ -25,11 +25,11 @@ basHttp.interceptors.response.use(
   function (response) {
     switch (response.status) {
       case 200:
-        if (response.data.ok) {
-          return response;
+        if (response.data.code === 0) {
+          return response.data.data;
         } else {
           message.error(response.data.message);
-          return response;
+          return response.data;
         }
       case 401:
         message.warning("鉴权失败");
@@ -68,10 +68,10 @@ basHttp.interceptors.response.use(
 export const getAsmToken = () => {
   const value = storage.getToken();
   if (!value) {
-    return;
+    return "";
   }
   if (new Date().getTime() > value.expiration) {
-    return;
+    return "";
   }
   return "Bearer " + value.token;
 };

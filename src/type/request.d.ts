@@ -4,7 +4,7 @@ declare namespace RequestType {
     name: "string";
     password: "string";
   }
-  interface Rogister {
+  interface Register {
     captchaId: "string";
     captchaValue: "string";
     name: "string";

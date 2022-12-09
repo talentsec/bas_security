@@ -8,12 +8,12 @@ export const Login = (data: RequestType.Login): Promise<ResponseType.Login> => {
 };
 
 // 注册
-export const Rogister = (data: RequestType.Rogister): Promise<number> => {
+export const Register = (data: RequestType.Register): Promise<number> => {
   return http.post(`${BaseUrl}/register`, data);
 };
 
 // 用户列表
-export const GetUserList = (data: RequestType.Rogister): Promise<ResponseType.GetUserDetail[]> => {
+export const GetUserList = (data: RequestType.Register): Promise<ResponseType.GetUserDetail[]> => {
   return http.get(`${BaseUrl}/users`, { params: data });
 };
 
@@ -33,8 +33,8 @@ export const UpdateUser = (id: number, data: RequestType.UpdateUser): Promise<nu
 };
 
 // 获取验证码
-export const GetCaptcha = (): Promise<number> => {
-  return http.get(`${BaseUrl}/captcha`);
+export const GetCaptcha = (): Promise<ResponseType.GetCaptcha> => {
+  return http.post(`${BaseUrl}/captcha`);
 };
 
 // 验证验证码

@@ -3,7 +3,8 @@ import { useNavigate, Navigate } from "react-router";
 import { useAuth } from "@/hooks/auth";
 
 export default function Landing() {
-  const [user] = useAuth();
+  const [hasAuth] = useAuth();
+  console.log(hasAuth, 4444);
 
   // useEffect(() => {
   //   if (user) {
@@ -13,5 +14,5 @@ export default function Landing() {
   //   }
   // }, []);
 
-  return <Navigate to={user ? "/app/my/vector" : "/login"} />;
+  return <Navigate to={hasAuth ? "/app/my/vector" : "/login"} />;
 }

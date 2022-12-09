@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Form, Input, message } from "antd";
 import BackImg from "@/assets/login_back.svg";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector, useAppDispatch } from "@/hooks/redux";
+import { setLoginState } from "@/store/slices/account";
+import { GetCaptcha, Login as LoginApi, Register, VerifyCaptcha } from "@/api/account";
+import { useMutation, useQuery } from "react-query";
+
+const BaseUrl = "http://10.10.10.242:8051";
 
 enum TabEnum {
   LOGIN = "login",
@@ -37,7 +44,21 @@ const LoginPannel = ({ jumpToRegister }: LoginPannelPropsType) => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          <Form.Item name="username" rules={[{ required: true, message: "请输入邮箱" }]}>
+          <Form.Item
+            name="username"
+            rules={[
+              { required: true, message: "请输入邮箱" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const reg = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+                  if (reg.test(value)) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("请输入正确的邮箱"));
+                }
+              })
+            ]}
+          >
             <span className="border-b pb-2">
               <Input className="w-96" placeholder="邮箱" size="large" bordered={false} />
             </span>
@@ -49,7 +70,8 @@ const LoginPannel = ({ jumpToRegister }: LoginPannelPropsType) => {
             </span>
           </Form.Item>
           <div className="flex justify-between pb-8 px-2 w-full">
-            <Checkbox>记住我</Checkbox>
+            {/* <Checkbox>记住我</Checkbox> */}
+            <span></span>
             <div
               className=" text-gray-400 text-right  px-3 cursor-pointer hover:text-blue-500"
               onClick={() => jumpToRegister()}
@@ -69,8 +91,31 @@ const LoginPannel = ({ jumpToRegister }: LoginPannelPropsType) => {
 };
 
 const RegisterPannel = ({ jumpToLogin }: RegisterPannelPropsType) => {
+  const { data: captchaData, refetch } = useQuery("get-captch", GetCaptcha);
+
+  const { mutate: RogisterMutate } = useMutation(newOrgs => Register(newOrgs), {
+    onSuccess: data => {
+      message.error("注册成功");
+    },
+    onError: error => {
+      message.error("注册失败");
+    }
+  });
+  const { mutate: VerifyCaptchaMutate } = useMutation(newOrgs => VerifyCaptcha(newOrgs), {
+    onSuccess: data => {
+      RogisterMutate(1);
+    },
+    onError: error => {
+      message.error("验证码不正确");
+    }
+  });
+
   const onFinish = (values: any) => {
     console.log("Success:", values);
+    VerifyCaptchaMutate({
+      captchaId: captchaData?.captchaId,
+      value: values.verifyCode
+    });
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -89,7 +134,21 @@ const RegisterPannel = ({ jumpToLogin }: RegisterPannelPropsType) => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          <Form.Item name="username" rules={[{ required: true, message: "请输入邮箱" }]}>
+          <Form.Item
+            name="username"
+            rules={[
+              { required: true, message: "请输入邮箱" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  const reg = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
+                  if (reg.test(value)) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("请输入正确的邮箱"));
+                }
+              })
+            ]}
+          >
             <span className="border-b pb-2">
               <Input className="w-96 border-b" placeholder="邮箱" size="large" bordered={false} />
             </span>
@@ -119,10 +178,16 @@ const RegisterPannel = ({ jumpToLogin }: RegisterPannelPropsType) => {
             </span>
           </Form.Item>
           <Form.Item name="verifyCode" rules={[{ required: true, message: "请输入验证码" }]}>
-            <span className="border-b pb-2">
-              <Input placeholder="验证码" className="w-60" size="large" bordered={false} />
-            </span>
+            <div className="flex justify-between w-full">
+              <span className="border-b pb-2 ">
+                <Input placeholder="验证码" className="w-60" size="large" bordered={false} />
+              </span>
+              <span className="h-10 inline-block ml-4 border cursor-pointer" onClick={() => refetch()}>
+                <img src={captchaData ? BaseUrl + captchaData.imageUrl : ""} alt="" className="h-full " />
+              </span>
+            </div>
           </Form.Item>
+
           <Form.Item>
             <Button type="primary" htmlType="submit" className="w-96" size="large">
               同意条款并注册
@@ -151,8 +216,22 @@ export default function Login() {
     setCurTab(TabEnum.LOGIN);
   };
 
+  const [state, setState] = useState(false);
+  const dispatch = useAppDispatch();
+
+  const Navigate = useNavigate();
+
+  const aaa = () => {
+    Navigate("/app/my/vector");
+    setState(!state);
+    dispatch(setLoginState(true));
+  };
+
   return (
     <div className="w-screen h-screen bg-blue-500 relative">
+      <div className="p-10 border z-10 absolute top-0" onClick={aaa}>
+        jjjj
+      </div>
       <img src={BackImg} alt="" className="w-full h-full absolute top-0 left-0" />
       <div className="absolute w-3/4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-2xl">
         <section className="text-center text-3xl tracking-widest">潮汐自动化模拟攻击安全管理平台</section>

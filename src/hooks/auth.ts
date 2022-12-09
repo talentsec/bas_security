@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 
 export const useAuth = () => {
-  const [isAuth, setIsAuth] = useState(false);
+  const hasLogin = useAppSelector(state => state.account.hasLogin);
 
-  return [isAuth, setIsAuth];
+  return [hasLogin];
 };

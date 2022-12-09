@@ -6,6 +6,7 @@ import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { setLoginState } from "@/store/slices/account";
 import { GetCaptcha, Login as LoginApi, Register, VerifyCaptcha } from "@/api/account";
 import { useMutation, useQuery } from "react-query";
+import { RequestStateEnum } from "@/type/api";
 
 const BaseUrl = "http://10.10.10.242:8051";
 
@@ -90,37 +91,48 @@ const LoginPannel = ({ jumpToRegister }: LoginPannelPropsType) => {
   );
 };
 
+interface FormType {
+  password: string;
+  password2: string;
+  email: string;
+  verifyCode: string;
+}
+
 const RegisterPannel = ({ jumpToLogin }: RegisterPannelPropsType) => {
-  const { data: captchaData, refetch } = useQuery("get-captch", GetCaptcha);
-
-  const { mutate: RogisterMutate } = useMutation(newOrgs => Register(newOrgs), {
-    onSuccess: data => {
-      message.error("注册成功");
-    },
-    onError: error => {
-      message.error("注册失败");
-    }
+  const { data: captchaData, refetch } = useQuery("get-captch", GetCaptcha, {
+    select: data => data.data
   });
-  const { mutate: VerifyCaptchaMutate } = useMutation(newOrgs => VerifyCaptcha(newOrgs), {
+
+  const { mutate: RogisterMutate } = useMutation(Register, {
     onSuccess: data => {
-      RogisterMutate(1);
+      if (data.code === RequestStateEnum.SUCCESS) {
+        message.success("注册成功");
+      } else {
+        // Noop
+      }
     },
     onError: error => {
-      message.error("验证码不正确");
+      console.log(error);
     }
   });
 
-  const onFinish = (values: any) => {
-    console.log("Success:", values);
-    VerifyCaptchaMutate({
-      captchaId: captchaData?.captchaId,
-      value: values.verifyCode
-    });
+  const onFinish = (values: FormType) => {
+    RogisterMutate(getCommitForm(values));
   };
 
-  const onFinishFailed = (errorInfo: any) => {
+  const onFinishFailed = (errorInfo: unknown) => {
     console.log("Failed:", errorInfo);
   };
+
+  const getCommitForm = (form: FormType) => {
+    return {
+      captchaId: captchaData?.captchaId || "",
+      captchaValue: form.verifyCode,
+      name: form.email,
+      password: form.password
+    };
+  };
+
   return (
     <div>
       <section className="text-blue-500 text-center text-lg mb-8">注册账号</section>
@@ -135,7 +147,7 @@ const RegisterPannel = ({ jumpToLogin }: RegisterPannelPropsType) => {
           autoComplete="off"
         >
           <Form.Item
-            name="username"
+            name="email"
             rules={[
               { required: true, message: "请输入邮箱" },
               ({ getFieldValue }) => ({

@@ -8,7 +8,7 @@ export const Login = (data: RequestType.Login): Promise<ResponseType.Login> => {
 };
 
 // 注册
-export const Register = (data: RequestType.Register): Promise<number> => {
+export const Register = (data: RequestType.Register): Promise<ResponseWrapper<undefined>> => {
   return http.post(`${BaseUrl}/register`, data);
 };
 
@@ -38,7 +38,7 @@ export const GetCaptcha = (): Promise<ResponseType.GetCaptcha> => {
 };
 
 // 验证验证码
-export const VerifyCaptcha = (data: RequestType.VerifyCaptcha): Promise<number> => {
+export const VerifyCaptcha = (data: RequestType.VerifyCaptcha): Promise<ResponseWrapper<null>> => {
   return http.post(`${BaseUrl}/captcha/verify`, data);
 };
 

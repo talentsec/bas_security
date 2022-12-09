@@ -12,7 +12,7 @@ basHttp.interceptors.request.use(
   async function (config) {
     config.baseURL = "/api";
     // config.timeout = 3000
-    // config.headers.Authorization = getAsmToken();
+    config.headers.Authorization = getToken();
 
     return config;
   },
@@ -26,7 +26,7 @@ basHttp.interceptors.response.use(
     switch (response.status) {
       case 200:
         if (response.data.code === 0) {
-          return response.data.data;
+          return response.data;
         } else {
           message.error(response.data.message);
           return response.data;
@@ -65,7 +65,7 @@ basHttp.interceptors.response.use(
   }
 );
 
-export const getAsmToken = () => {
+export const getToken = () => {
   const value = storage.getToken();
   if (!value) {
     return "";

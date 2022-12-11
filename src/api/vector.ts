@@ -3,8 +3,8 @@ import http from "./http";
 const BaseUrl = "/vectors";
 
 // 向量列表
-export const GetVectorList = (): Promise<ResponseType.GetVectorList> => {
-  return http.get(`${BaseUrl}`);
+export const GetVectorList = (data: PageData): Promise<ResponseType.GetVectorList> => {
+  return http.get(`${BaseUrl}`, { params: data });
 };
 
 // 创建向量
@@ -42,7 +42,7 @@ export const DeleteVectorVersions = (id: string): Promise<ResponseWrapper<unknow
 
 // 发布/撤销向量版本
 export const PublishVectorVersions = (id: string, action: "CANCEL" | "PUBLISH"): Promise<ResponseWrapper<unknown>> => {
-  return http.patch(`${BaseUrl}/versions/${id}`, {
+  return http.patch(`${BaseUrl}/versions/${id}/publish`, {
     action
   });
 };
@@ -55,7 +55,7 @@ export const GetVectorDetail = (
     limit: number;
     page: number;
   }
-): Promise<ResponseWrapper<unknown>> => {
+): Promise<ResponseType.GetVectorDetail> => {
   return http.get(`${BaseUrl}/${id}`, {
     params
   });
@@ -66,7 +66,7 @@ export const DeleteVector = (id: string): Promise<ResponseWrapper<unknown>> => {
   return http.delete(`${BaseUrl}/${id}`);
 };
 
-//
+// 更新向量
 export const UpdateVector = (id: string, data: { name: string }): Promise<ResponseWrapper<unknown>> => {
   return http.patch(`${BaseUrl}/${id}`, data);
 };

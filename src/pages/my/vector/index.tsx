@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Breadcrumb, Input, Table, Popover, message } from "antd";
 import { useQuery, useMutation } from "react-query";
+import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import SearchIcon from "@iconify/icons-icon-park-outline/search";
 import { PlusOutlined, ProfileFilled, MoreOutlined, DeleteFilled, EyeFilled, EditFilled } from "@ant-design/icons";
 import RenameModal from "./RenameModal";
 import type { ColumnsType } from "antd/es/table";
-import { GetMyVectorList, UpdateVector } from "@/api/vector";
+import { GetMyVectorList, UpdateVector, GetVectorList } from "@/api/vector";
 import { RequestStateEnum } from "@/type/api";
 
 interface TableDateType {
@@ -31,9 +32,13 @@ const EditMenu = ({ edit }: { edit: (type: EditType) => void }) => {
       icon: <EyeFilled />
     },
     {
-      label: "删除",
+      label: <span className="text-red-500">删除</span>,
       value: "delete",
-      icon: <DeleteFilled />
+      icon: (
+        <span className="text-red-500">
+          <DeleteFilled />
+        </span>
+      )
     }
   ];
   return (
@@ -54,21 +59,12 @@ const EditMenu = ({ edit }: { edit: (type: EditType) => void }) => {
   );
 };
 
-const data = [
-  {
-    id: 1,
-    name: "string",
-    pubNum: 2,
-    versionNum: 1,
-    key: 1
-  }
-];
-
 const Index = () => {
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const [curVector, setCurVector] = useState<null | TableDateType>(null);
   const [renameModalVisible, setRenameModalVisible] = useState(false);
+  const Navigater = useNavigate();
 
   const columns: ColumnsType<TableDateType> = [
     {
@@ -116,7 +112,7 @@ const Index = () => {
     }
   ];
 
-  const { data: tableData, refetch } = useQuery(["my-vector-list"], () => GetMyVectorList({ limit, page }), {
+  const { data: tableData, refetch } = useQuery(["my-vector-list"], () => GetVectorList({ limit, page }), {
     select: data => {
       const list: TableDateType[] =
         data.data?.content.map((item, index) => {
@@ -144,11 +140,10 @@ const Index = () => {
   const handleEdit = (editType: EditType, vector: TableDateType) => {
     switch (editType) {
       case "rename":
-        console.log("rename", vector);
         toggleRenameModal();
         break;
       case "detail":
-        console.log("detail");
+        Navigater(`/app/my/vector/${vector.id}?name=${vector.name}`);
         break;
       case "delete":
         console.log("delete");
@@ -191,9 +186,9 @@ const Index = () => {
         </section>
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={tableData?.list}
           pagination={{
-            total: data.length
+            total: tableData?.list.length
           }}
         />
       </section>

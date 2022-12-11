@@ -3,8 +3,8 @@ import { Outlet } from "react-router-dom";
 const Layout = React.lazy(() => import("@/components/Layout"));
 const My = React.lazy(() => import("@/pages/my"));
 const MyVector = React.lazy(() => import("@/pages/my/vector/index"));
-// const MyScene = React.lazy(() => import("@/pages/my/scene/index"));
-import MyScene from "@/pages/my/scene";
+const MyVectorDetail = React.lazy(() => import("@/pages/my/vector/Detail"));
+const MyScene = React.lazy(() => import("@/pages/my/scene/index"));
 const MyJob = React.lazy(() => import("@/pages/my/job/index"));
 const All = React.lazy(() => import("@/pages/all/index"));
 
@@ -29,15 +29,19 @@ export const protectedRoutes = [
         children: [
           {
             path: "vector",
-            element: <MyVector></MyVector>
+            element: <MyVector />
+          },
+          {
+            path: "vector/:id",
+            element: <MyVectorDetail />
           },
           {
             path: "scene",
-            element: <MyScene></MyScene>
+            element: <MyScene />
           },
           {
             path: "job",
-            element: <MyJob></MyJob>
+            element: <MyJob />
           }
         ]
       },

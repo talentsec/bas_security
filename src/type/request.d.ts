@@ -143,6 +143,16 @@ declare namespace ResponseType {
     }>
   >;
 
+  type GetVectorDetail = ResponseWrapper<PageWrapper<GetVectorDetailContent>>;
+  type GetVectorDetailContent = {
+    id: number;
+    name: string;
+    pubTime: string;
+    status: VectorPublishStateType;
+    updatedAt: string;
+    version: string;
+  };
+
   type GetMyVectorList = ResponseWrapper<
     PageWrapper<{
       id: number;
@@ -151,6 +161,13 @@ declare namespace ResponseType {
       versionNum: number;
     }>
   >;
+}
+
+enum VectorPublishStateType {
+  DRAFT = "DRAFT", // 未发布
+  IN_AUDIT = "IN_AUDIT", // 审核中
+  AUDIT_REJECT = "AUDIT_REJECT", // 审核拒绝
+  PUBLISHED = "PUBLISHED" // 已发布
 }
 
 type ResponseWrapper<T> = {

@@ -17,6 +17,8 @@ function DeleteModal({ open, handleOk, handleCancel }: DeleteModalPropsType) {
       okText="确定"
       cancelText="取消"
       destroyOnClose
+      closable={false}
+      maskClosable={false}
     >
       <div className="py-8">
         <div className="py-8">您确认删除该版本吗？</div>

@@ -6,7 +6,6 @@ import { commonRoutes } from "./common";
 import { useAuth } from "@/hooks/auth";
 
 export default function Index() {
-  // TODO 权限相关代码
   const [hasAuth] = useAuth();
 
   const routes = hasAuth ? protectedRoutes : publicRoutes;

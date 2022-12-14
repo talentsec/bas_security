@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import SearchIcon from "@iconify/icons-icon-park-outline/search";
 import { PlusOutlined, ProfileFilled, MoreOutlined, DeleteFilled, EyeFilled, EditFilled } from "@ant-design/icons";
-import RenameModal from "./RenameModal";
+import RenameModal from "./components/RenameModal";
 import type { ColumnsType } from "antd/es/table";
 import { GetMyVectorList, UpdateVector, GetVectorList } from "@/api/vector";
 import { RequestStateEnum } from "@/type/api";
@@ -112,8 +112,10 @@ const Index = () => {
     }
   ];
 
-  const { data: tableData, refetch } = useQuery(["my-vector-list"], () => GetVectorList({ limit, page }), {
+  const { data: tableData, refetch } = useQuery(["my-vector-list"], () => GetMyVectorList({ limit, page }), {
     select: data => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const list: TableDateType[] =
         data.data?.content.map((item, index) => {
           return {
@@ -155,7 +157,7 @@ const Index = () => {
   };
 
   const handleRename = (name: string) => {
-    renameMutate({ id: String(curVector?.id), name: { name } });
+    renameMutate({ id: String(curVector?.id), data: { name } });
   };
 
   const toggleRenameModal = () => {
@@ -167,7 +169,7 @@ const Index = () => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col p-4">
       <Breadcrumb>
         <Breadcrumb.Item>我的</Breadcrumb.Item>
         <Breadcrumb.Item>攻击向量</Breadcrumb.Item>

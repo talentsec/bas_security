@@ -39,15 +39,15 @@ declare namespace RequestType {
     platform: string;
     remark: string;
     roleType: "NORMAL";
-    scenarios: {
+    contents: {
       inputConfig: {
-        additionalProp1: any;
+        content: VectorInputConfigType[];
       };
       os: string;
-      osArch: [string];
-      osVersion: [string];
+      osArch: string[];
+      osVersion: string[];
       outputConfig: {
-        additionalProp1: any;
+        content: { name: string; content: string }[];
       };
       url: string;
     }[];
@@ -62,20 +62,18 @@ declare namespace RequestType {
     platform: string;
     remark: string;
     roleType: "NORMAL";
-    scenarios: [
-      {
-        inputConfig: {
-          additionalProp1: unknown;
-        };
-        os: string;
-        osArch: [string];
-        osVersion: [string];
-        outputConfig: {
-          additionalProp1: unknown;
-        };
-        url: string;
-      }
-    ];
+    contents: {
+      inputConfig: {
+        content: VectorInputConfigType[];
+      };
+      os: string;
+      osArch: string[];
+      osVersion: string[];
+      outputConfig: {
+        content: { name: string; content: string }[];
+      };
+      url: string;
+    }[];
     targetRangeURL: string;
     vectorID: number;
     version: string;
@@ -84,24 +82,22 @@ declare namespace RequestType {
     attCkCategory: string;
     attCkID: string;
     category_id: string;
-    execMode: "LOCAL";
+    execMode: "LOCAL" | "REMOTE";
     platform: string;
     remark: string;
-    roleType: "NORMAL";
-    scenarios: [
-      {
-        inputConfig: {
-          additionalProp1: unknown;
-        };
-        os: string;
-        osArch: [string];
-        osVersion: [string];
-        outputConfig: {
-          additionalProp1: unknown;
-        };
-        url: string;
-      }
-    ];
+    roleType: "NORMAL" | "ADMIN";
+    contents: {
+      inputConfig: {
+        content: VectorInputConfigType[];
+      };
+      os: string;
+      osArch: string[];
+      osVersion: string[];
+      outputConfig: {
+        content: { name: string; content: string }[];
+      };
+      url: string;
+    }[];
     targetRangeURL: string;
   }
 }
@@ -142,6 +138,32 @@ declare namespace ResponseType {
       version: string;
     }>
   >;
+
+  type VectorContentConfig = {
+    inputConfig: Record<string, unknown>;
+    os: string;
+    osArch: string[];
+    osVersion: string[];
+    outputConfig: Record<string, unknown>;
+    url: string;
+  };
+
+  type GetVectorVersionDetailContent = {
+    attCkCategory: string;
+    attCkID: string;
+    categoryID: string;
+    contents: VectorContentConfig[];
+    execMode: "LOCAL" | "REMOTE";
+    id: 0;
+    name: string;
+    platform: string;
+    remark: string;
+    roleType: "NORMAL" | "ADMIN";
+    targetRangeURL: string;
+    version: string;
+  };
+
+  type GetVectorVersionDetail = ResponseWrapper<GetVectorVersionDetailContent>;
 
   type GetVectorDetail = ResponseWrapper<PageWrapper<GetVectorDetailContent>>;
   type GetVectorDetailContent = {
@@ -184,7 +206,7 @@ type PageWrapper<T> = {
   totalPage: number;
 };
 
-declare type PageData = {
+type PageData = {
   limit: number;
   page: number;
 };

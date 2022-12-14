@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { Breadcrumb, Input, Table, Popover, message, Button } from "antd";
 import { format } from "date-fns";
 import { useQuery, useMutation } from "react-query";
@@ -18,6 +18,7 @@ import { VectorPublishStateMap } from "@/const/vector";
 import DeleteModal from "./DeleteModal";
 import PublishModal from "./PublishModal";
 import RevorkModal from "./RevorkModal";
+import CreateModal from "./CreateModal";
 
 type EditType = "publish" | "edit" | "revork" | "delete";
 
@@ -87,6 +88,7 @@ const StateColorMap: Record<VectorPublishStateType, string> = {
 
 function VectorDetail() {
   const { id } = useParams();
+  const Navigater = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
@@ -94,6 +96,7 @@ function VectorDetail() {
   const [revorkModalVisible, setRevorkModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [publishModalVisible, setPublishModalVisible] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
 
   const name = searchParams.get("name");
 
@@ -224,13 +227,26 @@ function VectorDetail() {
   const togglePublishModal = () => {
     setPublishModalVisible(!publishModalVisible);
   };
+  const toggleCreateModal = () => {
+    setCreateModalVisible(!createModalVisible);
+  };
 
   const toggleModal = () => {
     // TODO
   };
 
+  const handleVersionEdit = (id?: number, version?: string) => {
+    toggleCreateModal();
+    console.log(id);
+    Navigater(`/app/my/vector/edit?${id ? "id=" + id : ""}${version ? "&v=" + version : ""}`);
+  };
+
+  const handleBack = () => {
+    Navigater("/app/my/vector");
+  };
+
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col p-4">
       <Breadcrumb>
         <Breadcrumb.Item>我的</Breadcrumb.Item>
         <Breadcrumb.Item>攻击向量</Breadcrumb.Item>
@@ -239,13 +255,15 @@ function VectorDetail() {
       <section className="rounded-lg bg-white w-full flex-1 mt-4 p-6">
         <section className="text-lg font-semibold flex justify-between py-2 mb-4">
           <span>
-            <span className="mr-4 hover:text-blue-500 cursor-pointer">
+            <span className="mr-4 hover:text-blue-500 cursor-pointer" onClick={handleBack}>
               <LeftOutlined />
             </span>
             {name}
             <span className="text-xs font-normal text-blue-600 ml-1">{`（共发布${tableData?.total}个版本）`}</span>
           </span>
-          <Button type="primary">创建新版本</Button>
+          <Button type="primary" onClick={toggleCreateModal}>
+            创建新版本
+          </Button>
         </section>
         <section onClick={toggleModal}></section>
         <Table
@@ -271,6 +289,11 @@ function VectorDetail() {
         handleOk={() => publishMutate(String(curVector?.id))}
         handleCancel={togglePublishModal}
       ></PublishModal>
+      <CreateModal
+        open={createModalVisible}
+        handleCancel={toggleCreateModal}
+        handleOk={handleVersionEdit}
+      ></CreateModal>
     </div>
   );
 }

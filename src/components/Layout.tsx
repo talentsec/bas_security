@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, createContext } from "react";
 import { HomeOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu } from "antd";
@@ -64,8 +64,9 @@ const BaseLayout = ({ children }: LayoutProps) => {
         }
         onCollapse={value => setCollapsed(value)}
       >
-        <div className="h-14 flex w-full justify-center p-5 text-xl">
-          <Logo className=""></Logo>
+        <div className="h-14 flex w-full justify-center p-5 text-xl items-center gap-2 italic">
+          <Logo />
+          BAS
         </div>
         <Menu
           theme="light"
@@ -78,10 +79,13 @@ const BaseLayout = ({ children }: LayoutProps) => {
       <Layout className="site-layout">
         {/* <Header style={{ padding: 0, background: colorBgContainer }} /> */}
         <div className="h-14 bg-white"></div>
-        <Content>{children}</Content>
+        <LayoutContext.Provider value={collapsed}>
+          <Content>{children}</Content>
+        </LayoutContext.Provider>
       </Layout>
     </Layout>
   );
 };
 
+export const LayoutContext = createContext(false);
 export default BaseLayout;

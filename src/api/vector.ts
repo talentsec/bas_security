@@ -23,7 +23,7 @@ export const UpdataVector = (params: RequestType.UpdateVector): Promise<Response
 };
 
 // 向量版本详情
-export const GetVectorVersions = (id: string): Promise<ResponseWrapper<unknown>> => {
+export const GetVectorVersionDetail = (id: string): Promise<ResponseType.GetVectorVersionDetail> => {
   return http.get(`${BaseUrl}/versions/${id}`);
 };
 
@@ -68,5 +68,6 @@ export const DeleteVector = (id: string): Promise<ResponseWrapper<unknown>> => {
 
 // 更新向量
 export const UpdateVector = (id: string, data: { name: string }): Promise<ResponseWrapper<unknown>> => {
+  console.log(id, data);
   return http.patch(`${BaseUrl}/${id}`, data);
 };

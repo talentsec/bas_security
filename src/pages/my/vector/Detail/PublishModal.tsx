@@ -17,6 +17,8 @@ function PublishModal({ open, handleOk, handleCancel }: PublishModalPropsType) {
       okText="确定"
       cancelText="取消"
       destroyOnClose
+      closable={false}
+      maskClosable={false}
     >
       <div className="py-8">您确认发布该版本吗？</div>
     </Modal>

@@ -1,6 +1,4 @@
-import type { FC } from "react";
 import React, { memo } from "react";
-
 import { SourceBox } from "./SourceBox";
 import { StatefulTargetBox as TargetBox } from "./TargetBox";
 import { ComponentsList } from "./SourceBox";

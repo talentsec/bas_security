@@ -30,58 +30,10 @@ declare namespace RequestType {
     captchaId: string;
     value: string;
   }
-  interface CreateVector {
+  interface VectorDetailBaseType {
     attCkCategory: string;
     attCkID: string;
     categoryID: string;
-    execMode: "LOCAL";
-    name: string;
-    platform: string;
-    remark: string;
-    roleType: "NORMAL";
-    contents: {
-      inputConfig: {
-        content: VectorInputConfigType[];
-      };
-      os: string;
-      osArch: string[];
-      osVersion: string[];
-      outputConfig: {
-        content: { name: string; content: string }[];
-      };
-      url: string;
-    }[];
-    targetRangeURL: string;
-    version: string;
-  }
-  interface UpdateVector {
-    attCkCategory: string;
-    attCkID: string;
-    category_id: string;
-    execMode: "LOCAL";
-    platform: string;
-    remark: string;
-    roleType: "NORMAL";
-    contents: {
-      inputConfig: {
-        content: VectorInputConfigType[];
-      };
-      os: string;
-      osArch: string[];
-      osVersion: string[];
-      outputConfig: {
-        content: { name: string; content: string }[];
-      };
-      url: string;
-    }[];
-    targetRangeURL: string;
-    vectorID: number;
-    version: string;
-  }
-  interface UpdateVectorVersion {
-    attCkCategory: string;
-    attCkID: string;
-    category_id: string;
     execMode: "LOCAL" | "REMOTE";
     platform: string;
     remark: string;
@@ -99,6 +51,30 @@ declare namespace RequestType {
       url: string;
     }[];
     targetRangeURL: string;
+  }
+
+  type updateVectorVersions = VectorDetailBaseType;
+
+  interface GetVectorList {
+    keyword?: string;
+    limit: number;
+    page: number;
+    status?: "PUBLISHED" | "UNPUBLISHED";
+    execMode?: "LOCAL" | "REMOTE";
+  }
+  interface GetMyVectorList {
+    keyword?: string;
+    limit: number;
+    page: number;
+    status?: "PUBLISHED" | "UNPUBLISHED";
+  }
+  interface CreateVector extends VectorDetailBaseType {
+    name: string;
+    version: string;
+  }
+  interface CreateVectorVersion extends VectorDetailBaseType {
+    vectorID: number;
+    version: string;
   }
 }
 
@@ -148,20 +124,11 @@ declare namespace ResponseType {
     url: string;
   };
 
-  type GetVectorVersionDetailContent = {
-    attCkCategory: string;
-    attCkID: string;
-    categoryID: string;
-    contents: VectorContentConfig[];
-    execMode: "LOCAL" | "REMOTE";
-    id: 0;
-    name: string;
-    platform: string;
-    remark: string;
-    roleType: "NORMAL" | "ADMIN";
-    targetRangeURL: string;
+  interface GetVectorVersionDetailContent extends RequestType.VectorDetailBaseType {
+    id: number;
+    name: "string";
     version: string;
-  };
+  }
 
   type GetVectorVersionDetail = ResponseWrapper<GetVectorVersionDetailContent>;
 

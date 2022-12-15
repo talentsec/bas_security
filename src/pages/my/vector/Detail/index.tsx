@@ -54,10 +54,10 @@ const EditMenu = ({ edit, state }: EditMenuPropsMenu) => {
     }
   ];
   const StateEditMap: Record<VectorPublishStateType, number[]> = {
-    AUDIT_REJECT: [2, 3],
+    AUDIT_REJECT: [0, 2, 3],
     DRAFT: [0, 2, 3],
-    PUBLISHED: [0, 1, 2, 3],
-    IN_AUDIT: [1, 2, 3]
+    PUBLISHED: [2, 3],
+    IN_AUDIT: [1]
   };
 
   const editList = StateEditMap[state].map(_ => fullEditList[_]);
@@ -89,8 +89,8 @@ const StateColorMap: Record<VectorPublishStateType, string> = {
 function VectorDetail() {
   const { id } = useParams();
   const Navigater = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [limit, setLimit] = useState(10);
+  const [searchParams] = useSearchParams();
+  const [limit, setLimit] = useState(3);
   const [page, setPage] = useState(1);
   const [curVector, setCurVector] = useState<null | ResponseType.GetVectorDetailContent>(null);
   const [revorkModalVisible, setRevorkModalVisible] = useState(false);
@@ -132,11 +132,9 @@ function VectorDetail() {
         };
         return (
           <span className="cursor-pointer">
-            {record.status !== "PUBLISHED" ? null : (
-              <Popover content={<EditMenu edit={edit} state={record.status} />} title="">
-                <MoreOutlined />
-              </Popover>
-            )}
+            <Popover content={<EditMenu edit={edit} state={record.status} />} title="">
+              <MoreOutlined />
+            </Popover>
           </span>
         );
       }
@@ -206,6 +204,7 @@ function VectorDetail() {
         togglePublishModal();
         break;
       case "edit":
+        Navigater(`/app/my/vector/edit?v=${vector.id}`);
         console.log("detail");
         break;
       case "revork":
@@ -235,10 +234,9 @@ function VectorDetail() {
     // TODO
   };
 
-  const handleVersionEdit = (id?: number, version?: string) => {
+  const handleVersionEdit = (versionId?: number) => {
     toggleCreateModal();
-    console.log(id);
-    Navigater(`/app/my/vector/edit?${id ? "id=" + id : ""}${version ? "&v=" + version : ""}`);
+    Navigater(`/app/my/vector/edit?${id ? "id=" + id : ""}${versionId ? "&v=" + versionId : ""}`);
   };
 
   const handleBack = () => {
@@ -270,7 +268,7 @@ function VectorDetail() {
           columns={columns}
           dataSource={tableData?.list || []}
           pagination={{
-            total: tableData?.list.length
+            total: tableData?.total
           }}
         />
       </section>

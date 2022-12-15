@@ -6,8 +6,9 @@ import { Icon } from "@iconify/react";
 import SearchIcon from "@iconify/icons-icon-park-outline/search";
 import { PlusOutlined, ProfileFilled, MoreOutlined, DeleteFilled, EyeFilled, EditFilled } from "@ant-design/icons";
 import RenameModal from "./components/RenameModal";
+import DeleteModal from "./components/DeleteModal";
 import type { ColumnsType } from "antd/es/table";
-import { GetMyVectorList, UpdateVector, GetVectorList } from "@/api/vector";
+import { GetMyVectorList, UpdateVector, GetVectorList, DeleteVector } from "@/api/vector";
 import { RequestStateEnum } from "@/type/api";
 
 interface TableDateType {
@@ -60,10 +61,12 @@ const EditMenu = ({ edit }: { edit: (type: EditType) => void }) => {
 };
 
 const Index = () => {
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(3);
   const [page, setPage] = useState(1);
+  const [keyword, setKeyword] = useState("");
   const [curVector, setCurVector] = useState<null | TableDateType>(null);
   const [renameModalVisible, setRenameModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const Navigater = useNavigate();
 
   const columns: ColumnsType<TableDateType> = [
@@ -76,17 +79,19 @@ const Index = () => {
       title: "发布状态",
       dataIndex: "pubNum",
       key: "pubNum",
-      render: _ => (
-        <>
-          {_ > 0 ? (
-            <span>
-              已发布<span className="ml-2 text-blue-700">({_})</span>
-            </span>
-          ) : (
-            <span></span>
-          )}
-        </>
-      )
+      render: _ => {
+        return (
+          <>
+            {_ > 0 ? (
+              <span>
+                已发布<span className="ml-2 text-blue-700">({_})</span>
+              </span>
+            ) : (
+              <span>未发布</span>
+            )}
+          </>
+        );
+      }
     },
     {
       title: "版本数量",
@@ -112,20 +117,24 @@ const Index = () => {
     }
   ];
 
-  const { data: tableData, refetch } = useQuery(["my-vector-list"], () => GetMyVectorList({ limit, page }), {
-    select: data => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const list: TableDateType[] =
-        data.data?.content.map((item, index) => {
-          return {
-            key: index,
-            ...item
-          };
-        }) || [];
-      return { list, total: data.data?.total || 0 };
+  const { data: tableData, refetch } = useQuery(
+    ["my-vector-list", keyword, limit, page],
+    () => GetMyVectorList({ limit, page, keyword }),
+    {
+      select: data => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const list: TableDateType[] =
+          data.data?.content.map((item, index) => {
+            return {
+              key: index,
+              ...item
+            };
+          }) || [];
+        return { list, total: Number(data.data?.total) || 0 };
+      }
     }
-  });
+  );
 
   const { mutate: renameMutate } = useMutation((arg: any) => UpdateVector(arg.id, arg.data), {
     onSuccess: data => {
@@ -139,6 +148,18 @@ const Index = () => {
     }
   });
 
+  const { mutate: deleteMutate } = useMutation((arg: string) => DeleteVector(arg), {
+    onSuccess: data => {
+      toggleDeleteModal();
+      if (data.code === RequestStateEnum.SUCCESS) {
+        message.success(`删除成功`);
+        refetch();
+      } else {
+        console.log(`删除失败`);
+      }
+    }
+  });
+
   const handleEdit = (editType: EditType, vector: TableDateType) => {
     switch (editType) {
       case "rename":
@@ -148,7 +169,7 @@ const Index = () => {
         Navigater(`/app/my/vector/${vector.id}?name=${vector.name}`);
         break;
       case "delete":
-        console.log("delete");
+        toggleDeleteModal();
         break;
       default:
         break;
@@ -160,12 +181,24 @@ const Index = () => {
     renameMutate({ id: String(curVector?.id), data: { name } });
   };
 
+  const handleDelete = () => {
+    deleteMutate(String(curVector?.id));
+  };
+
   const toggleRenameModal = () => {
     setRenameModalVisible(!renameModalVisible);
   };
 
-  const toggleModal = () => {
-    // TODO
+  const toggleDeleteModal = () => {
+    setDeleteModalVisible(!deleteModalVisible);
+  };
+
+  const creatVector = () => {
+    Navigater("/app/my/vector/edit");
+  };
+
+  const handleKeywordChange: React.KeyboardEventHandler<HTMLInputElement> = (arg: any) => {
+    setKeyword(arg.target?.value || "");
   };
 
   return (
@@ -176,11 +209,11 @@ const Index = () => {
       </Breadcrumb>
       <section className="rounded-lg bg-white w-full flex-1 mt-4 p-6">
         <section className="flex-1 gray-back">
-          <Input placeholder="搜索关键词" suffix={<Icon icon={SearchIcon} />} />
+          <Input placeholder="搜索关键词" suffix={<Icon icon={SearchIcon} />} onPressEnter={handleKeywordChange} />
         </section>
         <section
           className="flex items-center bg-gray-50 w-52 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer"
-          onClick={toggleModal}
+          onClick={creatVector}
         >
           <ProfileFilled className="text-orange-500 " />
           <span className="mr-10 ml-2">创建攻击向量</span>
@@ -190,11 +223,17 @@ const Index = () => {
           columns={columns}
           dataSource={tableData?.list}
           pagination={{
-            total: tableData?.list.length
+            total: tableData?.total,
+            pageSize: limit,
+            onChange: function (page, pageSize) {
+              setPage(page);
+              setLimit(pageSize);
+            }
           }}
         />
       </section>
       <RenameModal open={renameModalVisible} handleOk={handleRename} handleCancel={toggleRenameModal}></RenameModal>
+      <DeleteModal open={deleteModalVisible} handleOk={handleDelete} handleCancel={toggleDeleteModal}></DeleteModal>
     </div>
   );
 };

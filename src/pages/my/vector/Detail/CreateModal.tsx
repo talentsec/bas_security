@@ -79,7 +79,7 @@ function CreateModal({ open, handleOk, handleCancel }: DeleteModalPropsType) {
     if (selectedRowKeys.length) {
       const vector = tableData?.list[selectedRowKeys[0] as number];
       if (vector) {
-        handleOk(vector.id, vector.version);
+        handleOk(vector.id);
       }
     } else {
       message.warning("请选择版本号，或选择空白模版");

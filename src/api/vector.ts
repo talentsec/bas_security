@@ -3,7 +3,7 @@ import http from "./http";
 const BaseUrl = "/vectors";
 
 // 向量列表
-export const GetVectorList = (data: PageData): Promise<ResponseType.GetVectorList> => {
+export const GetVectorList = (data: RequestType.GetVectorList): Promise<ResponseType.GetVectorList> => {
   return http.get(`${BaseUrl}`, { params: data });
 };
 
@@ -13,13 +13,8 @@ export const CreateVector = (data: RequestType.CreateVector): Promise<ResponseWr
 };
 
 // 我的向量列表
-export const GetMyVectorList = (params: PageData): Promise<ResponseType.GetMyVectorList> => {
+export const GetMyVectorList = (params: RequestType.GetMyVectorList): Promise<ResponseType.GetMyVectorList> => {
   return http.get(`${BaseUrl}/my`, { params });
-};
-
-// 创建新向量版本
-export const UpdataVector = (params: RequestType.UpdateVector): Promise<ResponseWrapper<unknown>> => {
-  return http.post(`${BaseUrl}/versions`, { params });
 };
 
 // 向量版本详情
@@ -27,10 +22,15 @@ export const GetVectorVersionDetail = (id: string): Promise<ResponseType.GetVect
   return http.get(`${BaseUrl}/versions/${id}`);
 };
 
+// 创建新向量版本
+export const CreateVectorVersions = (params: RequestType.CreateVectorVersion): Promise<ResponseWrapper<unknown>> => {
+  return http.post(`${BaseUrl}/versions`, params);
+};
+
 // 更新向量版本
 export const UpdateVectorVersions = (
   id: string,
-  data: RequestType.UpdateVectorVersion
+  data: RequestType.updateVectorVersions
 ): Promise<ResponseWrapper<unknown>> => {
   return http.put(`${BaseUrl}/versions/${id}`, data);
 };
@@ -68,6 +68,5 @@ export const DeleteVector = (id: string): Promise<ResponseWrapper<unknown>> => {
 
 // 更新向量
 export const UpdateVector = (id: string, data: { name: string }): Promise<ResponseWrapper<unknown>> => {
-  console.log(id, data);
   return http.patch(`${BaseUrl}/${id}`, data);
 };

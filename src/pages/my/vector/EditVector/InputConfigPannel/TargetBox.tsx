@@ -8,7 +8,6 @@ import { Form, Input, Button, Space, Radio, message } from "antd";
 import { Colors } from "./Colors";
 import type { DragItem } from "./interfaces";
 import { ComponentsList } from "./SourceBox";
-import Item from "antd/es/list/Item";
 
 const style: CSSProperties = {
   textAlign: "center"

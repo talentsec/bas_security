@@ -11,8 +11,6 @@ interface InputConfigPannelProps {
 function InputConfigPannel({ value, onChange }: InputConfigPannelProps) {
   const [open, setOpen] = useState(false);
 
-  console.log(value, 666666);
-
   const showDrawer = () => {
     setOpen(true);
   };

@@ -12,7 +12,7 @@ basHttp.interceptors.request.use(
   async function (config) {
     config.baseURL = "/api";
     // config.timeout = 3000
-    config.headers.Authorization = getToken();
+    (config as any).headers.Authorization = getToken();
 
     return config;
   },
@@ -41,8 +41,8 @@ basHttp.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           message.info("登陆过期，跳转至登陆页面！");
-          window.location.href = "/login";
-          localStorage.removeItem("asm-token");
+          window.location.href = "/";
+          storage.clearToken();
           break;
         case 500:
           message.error(`服务器内部错误！${error.response.data.msg}`);

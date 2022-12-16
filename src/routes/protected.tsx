@@ -1,12 +1,13 @@
-import React, { Suspense } from "react";
+import React, { Children, Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import { Spin } from "antd";
 const Layout = React.lazy(() => import("@/components/Layout"));
 const My = React.lazy(() => import("@/pages/my"));
 const MyVector = React.lazy(() => import("@/pages/my/vector/index"));
-const MyVectorDetail = React.lazy(() => import("@/pages/my/vector/Detail"));
-const MyVectorEdit = React.lazy(() => import("@/pages/my/vector/EditVector/index"));
-const MyScene = React.lazy(() => import("@/pages/my/scene/index"));
+const MyVectorDetail = React.lazy(() => import("@/pages/my/vector/detail"));
+const MyVectorEdit = React.lazy(() => import("@/pages/my/vector/edit/index"));
+const MyScenario = React.lazy(() => import("@/pages/my/scenarios/index"));
+const MyScenarioEdit = React.lazy(() => import("@/pages/my/scenarios/edit/index"));
 const MyJob = React.lazy(() => import("@/pages/my/job/index"));
 const All = React.lazy(() => import("@/pages/all/index"));
 
@@ -48,8 +49,12 @@ export const protectedRoutes = [
             element: <MyVectorDetail />
           },
           {
-            path: "scene",
-            element: <MyScene />
+            path: "scenario",
+            element: <MyScenario />
+          },
+          {
+            path: "scenario/edit",
+            element: <MyScenarioEdit />
           },
           {
             path: "job",

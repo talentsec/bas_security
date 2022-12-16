@@ -50,11 +50,7 @@ export const PublishVectorVersions = (id: string, action: "CANCEL" | "PUBLISH"):
 // 向量详情
 export const GetVectorDetail = (
   id: string,
-  params: {
-    keyword: string;
-    limit: number;
-    page: number;
-  }
+  params: RequestType.GetVectorDetail
 ): Promise<ResponseType.GetVectorDetail> => {
   return http.get(`${BaseUrl}/${id}`, {
     params

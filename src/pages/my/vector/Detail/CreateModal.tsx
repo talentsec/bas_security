@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Breadcrumb, Input, Table, Popover, message, Button, Modal } from "antd";
+import { Table, message, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { format } from "date-fns";
 import { useQuery } from "react-query";
@@ -8,7 +8,6 @@ import type { ColumnsType } from "antd/es/table";
 import { RowSelectionType } from "antd/es/table/interface";
 import { GetVectorDetail } from "@/api/vector";
 import { VectorPublishStateMap } from "@/const/vector";
-import { RequestStateEnum } from "@/type/api";
 
 interface DeleteModalPropsType {
   open: boolean;
@@ -41,13 +40,12 @@ function CreateModal({ open, handleOk, handleCancel }: DeleteModalPropsType) {
   const [limit, setLimit] = useState(5);
   const [page, setPage] = useState(1);
 
-  const { data: tableData, refetch } = useQuery(
-    ["my-vector-detail"],
+  const { data: tableData } = useQuery(
+    ["my-vector-detail", limit, page],
     () =>
       GetVectorDetail(id as string, {
         limit,
-        page,
-        keyword: ""
+        page
       }),
     {
       select: data => {
@@ -111,9 +109,14 @@ function CreateModal({ open, handleOk, handleCancel }: DeleteModalPropsType) {
         dataSource={tableData?.list || []}
         rowSelection={rowSelection}
         pagination={{
-          total: tableData?.list.length,
+          total: tableData?.total,
+          pageSize: limit,
           size: "small",
-          showLessItems: false
+          showLessItems: false,
+          onChange: function (page, pageSize) {
+            setPage(page);
+            setLimit(pageSize);
+          }
         }}
         size="small"
       />

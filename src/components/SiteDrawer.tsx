@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { Drawer } from "antd";
 import { LayoutContext } from "./Layout";
 
+const DEFAULT_WIDTH = 640;
+
 interface SiteDrawerPropsType {
   open: boolean;
   onClose: () => void;
@@ -12,14 +14,13 @@ interface SiteDrawerPropsType {
   extra?: React.ReactNode;
 }
 const SiteDrawer = ({ open, onClose, title, destroyOnClose = true, children, extra, footer }: SiteDrawerPropsType) => {
-  const [width] = useState(document.querySelector(".site-layout")?.clientWidth || 640);
   const [widthMap, setWidthMap] = useState<Record<string, number>>({});
 
   const isExpand = !useContext(LayoutContext);
 
   useEffect(() => {
+    const width: number = document.querySelector(".site-layout")?.clientWidth || DEFAULT_WIDTH;
     if (isExpand) {
-      console.log(width);
       setWidthMap({
         isExpand: width,
         notExpand: width + 120
@@ -39,7 +40,7 @@ const SiteDrawer = ({ open, onClose, title, destroyOnClose = true, children, ext
       onClose={onClose}
       open={open}
       destroyOnClose={destroyOnClose}
-      width={widthMap[isExpand ? "isExpand" : "notExpand"]}
+      width={widthMap[isExpand ? "isExpand" : "notExpand"] || DEFAULT_WIDTH}
       mask={false}
       getContainer=".site-layout"
       extra={extra}

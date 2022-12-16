@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
-import { Breadcrumb, Input, Table, Popover, message, Button } from "antd";
+import { Breadcrumb, Table, Popover, message, Button } from "antd";
 import { format } from "date-fns";
 import { useQuery, useMutation } from "react-query";
 import {
@@ -90,8 +90,9 @@ function VectorDetail() {
   const { id } = useParams();
   const Navigater = useNavigate();
   const [searchParams] = useSearchParams();
-  const [limit, setLimit] = useState(3);
+  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
+  const [filterStatus, setFilterStatus] = useState<undefined | VectorPublishStateType>(undefined);
   const [curVector, setCurVector] = useState<null | ResponseType.GetVectorDetailContent>(null);
   const [revorkModalVisible, setRevorkModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -112,14 +113,33 @@ function VectorDetail() {
       key: "updatedAt",
       render: _ => <>{format(new Date(_), "yyyy-MM-dd HH:mm")}</>
     },
-    {
-      title: "发布检查",
-      dataIndex: "status",
-      render: (_: VectorPublishStateType) => <span className={StateColorMap[_]}>{VectorPublishStateMap[_]}</span>
-    },
+    // {
+    //   title: "发布检查",
+    //   dataIndex: "status",
+    //   render: (_: VectorPublishStateType) => <span className={StateColorMap[_]}>{VectorPublishStateMap[_]}</span>
+    // },
     {
       title: "发布状态",
       dataIndex: "status",
+      filters: [
+        {
+          text: "未发布",
+          value: "DRAFT"
+        },
+        {
+          text: "审核中",
+          value: "IN_AUDIT"
+        },
+        {
+          text: "审核拒绝",
+          value: "AUDIT_REJECT"
+        },
+        {
+          text: "已发布",
+          value: "PUBLISHED"
+        }
+      ],
+      filterMultiple: false,
       render: (_: VectorPublishStateType) => <span className={StateColorMap[_]}>{VectorPublishStateMap[_]}</span>
     },
     {
@@ -142,12 +162,12 @@ function VectorDetail() {
   ];
 
   const { data: tableData, refetch } = useQuery(
-    ["my-vector-detail"],
+    ["my-vector-detail", filterStatus, limit, page],
     () =>
       GetVectorDetail(id as string, {
         limit,
         page,
-        keyword: ""
+        status: filterStatus
       }),
     {
       select: data => {
@@ -268,7 +288,21 @@ function VectorDetail() {
           columns={columns}
           dataSource={tableData?.list || []}
           pagination={{
-            total: tableData?.total
+            total: tableData?.total,
+            pageSize: limit,
+            showTotal: total => `共计 ${total} 条`,
+            showSizeChanger: false,
+            onChange: function (page, pageSize) {
+              setPage(page);
+              setLimit(pageSize);
+            }
+          }}
+          onChange={(pagination, filters) => {
+            if (filters.status?.length === 1) {
+              setFilterStatus(filters.status[0] as any);
+            } else {
+              setFilterStatus(undefined);
+            }
           }}
         />
       </section>

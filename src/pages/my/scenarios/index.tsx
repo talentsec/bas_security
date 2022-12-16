@@ -8,8 +8,9 @@ import { PlusOutlined, ProfileFilled, MoreOutlined, DeleteFilled, EyeFilled, Edi
 import RenameModal from "./components/RenameModal";
 import DeleteModal from "./components/DeleteModal";
 import type { ColumnsType } from "antd/es/table";
-import { GetMyVectorList, UpdateVector, DeleteVector } from "@/api/vector";
+import { GetMyScenariosList, UpdateScenario, DeleteScenario } from "@/api/scenarios";
 import { RequestStateEnum } from "@/type/api";
+import { ReactComponent as AddIcon } from "@icon/scenarios.svg";
 
 interface TableDateType {
   id: number;
@@ -60,12 +61,12 @@ const EditMenu = ({ edit }: { edit: (type: EditType) => void }) => {
   );
 };
 
-const Index = () => {
+const MyScene = () => {
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState("");
   const [filterStatus, setFilterStatus] = useState<"PUBLISHED" | "UNPUBLISHED" | undefined>(undefined);
-  const [curVector, setCurVector] = useState<null | TableDateType>(null);
+  const [curScenario, setCurScenario] = useState<null | TableDateType>(null);
   const [renameModalVisible, setRenameModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const Navigater = useNavigate();
@@ -130,8 +131,8 @@ const Index = () => {
   ];
 
   const { data: tableData, refetch } = useQuery(
-    ["my-vector-list", keyword, limit, page, filterStatus],
-    () => GetMyVectorList({ limit, page, keyword, status: filterStatus }),
+    ["my-scenario-list", keyword, limit, page, filterStatus],
+    () => GetMyScenariosList({ limit, page, keyword, status: filterStatus }),
     {
       select: data => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -148,7 +149,7 @@ const Index = () => {
     }
   );
 
-  const { mutate: renameMutate } = useMutation((arg: any) => UpdateVector(arg.id, arg.data), {
+  const { mutate: renameMutate } = useMutation((arg: any) => UpdateScenario(arg.id, arg.data), {
     onSuccess: data => {
       toggleRenameModal();
       if (data.code === RequestStateEnum.SUCCESS) {
@@ -160,7 +161,7 @@ const Index = () => {
     }
   });
 
-  const { mutate: deleteMutate } = useMutation((arg: string) => DeleteVector(arg), {
+  const { mutate: deleteMutate } = useMutation((arg: string) => DeleteScenario(Number(arg)), {
     onSuccess: data => {
       toggleDeleteModal();
       if (data.code === RequestStateEnum.SUCCESS) {
@@ -186,15 +187,15 @@ const Index = () => {
       default:
         break;
     }
-    setCurVector(vector);
+    setCurScenario(vector);
   };
 
   const handleRename = (name: string) => {
-    renameMutate({ id: String(curVector?.id), data: { name } });
+    renameMutate({ id: String(curScenario?.id), data: { name } });
   };
 
   const handleDelete = () => {
-    deleteMutate(String(curVector?.id));
+    deleteMutate(String(curScenario?.id));
   };
 
   const toggleRenameModal = () => {
@@ -205,8 +206,8 @@ const Index = () => {
     setDeleteModalVisible(!deleteModalVisible);
   };
 
-  const creatVector = () => {
-    Navigater("/app/my/vector/edit");
+  const CreateScenario = () => {
+    Navigater("/app/my/scenario/edit");
   };
 
   const handleKeywordChange: React.KeyboardEventHandler<HTMLInputElement> = (arg: any) => {
@@ -217,7 +218,7 @@ const Index = () => {
     <div className="w-full h-full flex flex-col p-4">
       <Breadcrumb>
         <Breadcrumb.Item>我的</Breadcrumb.Item>
-        <Breadcrumb.Item>攻击向量</Breadcrumb.Item>
+        <Breadcrumb.Item>攻击场景</Breadcrumb.Item>
       </Breadcrumb>
       <section className="rounded-lg bg-white w-full flex-1 mt-4 p-6">
         <section className="flex-1 gray-back">
@@ -225,10 +226,10 @@ const Index = () => {
         </section>
         <section
           className="flex items-center bg-gray-50 w-52 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer"
-          onClick={creatVector}
+          onClick={CreateScenario}
         >
-          <ProfileFilled className="text-orange-500 " />
-          <span className="mr-10 ml-2">创建攻击向量</span>
+          <AddIcon />
+          <span className="mr-10 ml-2">创建攻击场景</span>
           <PlusOutlined />
         </section>
         <Table
@@ -259,4 +260,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default MyScene;

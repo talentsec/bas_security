@@ -8,9 +8,9 @@ import { useAuth } from "@/hooks/auth";
 export default function Index() {
   const [hasAuth] = useAuth();
 
-  if (location.pathname !== "/" && location.pathname !== "/login" && !hasAuth) {
-    location.pathname = "/login";
-  }
+  // if (location.pathname !== "/" && location.pathname !== "/login" && !hasAuth) {
+  //   location.pathname = "/login";
+  // }
 
   const routes = hasAuth ? protectedRoutes : publicRoutes;
 

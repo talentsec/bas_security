@@ -31,20 +31,23 @@ const VectorNode: FC<IProps> = ({ id, data, isConnectable }) => {
         position={Position.Right}
         style={{
           backgroundColor: color,
+          width: "5rem",
+          height: "1.5rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "#ffffff",
+          borderRadius: "4px",
+          fontSize: ".75rem",
           transform: `translate(100%, -50%)`
         }}
         onClick={() => {
           if (flowInstance && onConnectorClick) {
             const edges = flowInstance.getEdges();
-            // const connectFrom = edges.findIndex((e) => e.source === id)
             const connectedEdges = edges.filter(e => e.source === id);
-            // const isConnected = connectedEdges.length > 0 ? false : true
-            console.log("cur node", data, connectedEdges);
-
             onConnectorClick(data, connectedEdges, flowInstance.toObject());
           }
         }}
-        className="pointer-events-auto w-20 h-6 flex items-center justify-center z-50 cursor-pointer absolute rounded-sm text-white text-xs"
       >
         连接器配置
       </Handle>

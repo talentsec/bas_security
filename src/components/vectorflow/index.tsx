@@ -1,4 +1,4 @@
-import { createContext, FC, useState } from "react";
+import { createContext, FC, useEffect, useState } from "react";
 import { ReactFlowInstance, ReactFlowProvider } from "reactflow";
 import FlowPanel from "./FlowPanel";
 import NodePanel from "./NodePanel";
@@ -10,10 +10,12 @@ export type CustomNodeData = {
   id: string;
   label: string;
   type: CustomType;
+  // configured?: boolean
+  connectorId?: any;
 };
 
 export type CustomEdgeData = {
-  configured?: boolean;
+  // configured?: boolean
 };
 
 export type FlowData = {
@@ -40,14 +42,7 @@ export interface IProps {
   simple?: boolean;
   presetNodes: CustomNodeData[];
   onChange?: (type: "node" | "edge", data: any) => void;
-  onEdgeClick?: (
-    edgeProps: {
-      target: string;
-      source: string;
-      id: string;
-    },
-    flowData: FlowData
-  ) => void;
+  onConnectorClick?: (currentNode: CustomNodeData, edges: any[], flowData: FlowData) => void;
   onClear?: () => void; // 清空
   onSave?: (success: boolean, data?: FlowData, error?: string) => void;
 }
@@ -59,18 +54,17 @@ interface StateProps extends IProps {
 
 export const FlowContext = createContext({} as StateProps);
 
-const VectorFlow: FC<IProps> = ({ presetNodes, onChange, onEdgeClick, onClear, onSave, simple, data }) => {
+const VectorFlow: FC<IProps> = ({ presetNodes, simple, onChange, onConnectorClick, onClear, onSave, data }) => {
   const [flowInstance, setFlowInstance] = useState<ReactFlowInstance | null>(null);
 
   return (
     <FlowContext.Provider
       value={{
-        simple,
         flowInstance,
         setFlowInstance,
         presetNodes,
         onChange,
-        onEdgeClick,
+        onConnectorClick,
         onClear,
         onSave,
         data

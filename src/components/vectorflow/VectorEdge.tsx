@@ -1,4 +1,4 @@
-import { FC, memo, useContext } from "react";
+import { FC, memo, useContext, useEffect, useState } from "react";
 import { EdgeProps, getSmoothStepPath, EdgeLabelRenderer } from "reactflow";
 import { FlowContext } from ".";
 
@@ -15,7 +15,8 @@ const VectorEdge: FC<EdgeProps> = ({
   data,
   markerEnd
 }) => {
-  const { onEdgeClick, flowInstance } = useContext(FlowContext);
+  const { data: flowData } = useContext(FlowContext);
+
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -25,26 +26,24 @@ const VectorEdge: FC<EdgeProps> = ({
     targetY
   });
 
-  const color = data.configured ? "#48c79c" : "#e34d59";
+  let color = "#e34d59";
+  if (flowData) {
+    const nodes = flowData.nodes;
+    const sourceNode = nodes.find(n => n.id === source);
+    if (sourceNode && !!sourceNode.data.connectorId) {
+      color = "#48c79c";
+    }
+  }
 
   return (
     <>
-      <path className="react-flow__edge-path" id={id} d={edgePath} markerEnd={markerEnd} style={{ stroke: color }}>
-        <EdgeLabelRenderer>
-          <div
-            style={{
-              backgroundColor: color,
-              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`
-            }}
-            className="select-none pointer-events-auto z-50 cursor-pointer absolute rounded-sm text-white p-1 text-xs nopan nodrag"
-            onClick={() => {
-              onEdgeClick && flowInstance && onEdgeClick({ id, source, target }, flowInstance.toObject());
-            }}
-          >
-            连接器配置
-          </div>
-        </EdgeLabelRenderer>
-      </path>
+      <path
+        className="react-flow__edge-path"
+        id={id}
+        d={edgePath}
+        markerEnd={markerEnd}
+        style={{ stroke: color }}
+      ></path>
     </>
   );
 };

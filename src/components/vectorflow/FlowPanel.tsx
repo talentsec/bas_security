@@ -48,9 +48,7 @@ const edgeOptions: DefaultEdgeOptions = {
   markerEnd: {
     type: MarkerType.ArrowClosed
   },
-  data: {
-    configured: false
-  }
+  data: {}
 };
 
 const VectorFlow = () => {
@@ -103,7 +101,7 @@ const VectorFlow = () => {
           newEdge.type = "vector";
           newEdge.data = {
             // data: {
-            configured: false
+            // configured: false,
             // },
           };
           return setEdges(eds => addEdge(newEdge, eds));
@@ -135,8 +133,8 @@ const VectorFlow = () => {
       event.preventDefault();
       const reactFlowBounds = reactFlowWrapper.current?.getBoundingClientRect();
       const dataStr = event.dataTransfer.getData("application/reactflow");
-      const data = JSON.parse(dataStr) as CustomNodeData;
-      if (!data || !reactFlowBounds || !flowInstance) {
+      const nodeData = JSON.parse(dataStr) as CustomNodeData;
+      if (!nodeData || !reactFlowBounds || !flowInstance) {
         return;
       }
 
@@ -146,11 +144,11 @@ const VectorFlow = () => {
       });
 
       const newNode: Node = {
-        id: data.id,
-        type: data.type,
+        id: nodeData.id,
+        type: nodeData.type,
         position,
         data: {
-          ...data
+          ...nodeData
         }
       };
 

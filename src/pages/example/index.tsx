@@ -65,24 +65,27 @@ function App() {
   });
 
   return (
-    <div className="w-screen h-screen p-4">
+    <div className="w-full h-full p-4">
       <VectorFlow
-        simple
         data={initialValues}
         presetNodes={CustomNodeList}
         onChange={(t, d) => {
           // console.log('flow change', t, d)
         }}
-        onEdgeClick={(p, c) => {
+        onConnectorClick={(n, c, o) => {
           // todo
-          c.edges.forEach(e => {
-            if (e.id === p.id) {
+          // console.log(2333333, n, c, o)
+
+          o.nodes.forEach(e => {
+            console.log("eeeee", e);
+            if (e.id === n.id) {
               e.data = {
-                configured: true
+                ...e.data,
+                connectorId: "conncccc-111"
               };
             }
           });
-          setInitialValues({ ...c });
+          setInitialValues({ ...o });
         }}
         onSave={(s, d, e) => {
           // todo

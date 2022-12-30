@@ -9,7 +9,7 @@ interface IProps {
   isConnectable: boolean;
 }
 
-const VectorNode: FC<IProps> = ({ id, data, isConnectable }) => {
+const VectorNode: FC<IProps> = ({ id, data }) => {
   const { onConnectorClick, flowInstance } = useContext(FlowContext);
   const color = data.connectorId ? "#48c79c" : "#e34d59";
 
@@ -31,15 +31,16 @@ const VectorNode: FC<IProps> = ({ id, data, isConnectable }) => {
         position={Position.Right}
         style={{
           backgroundColor: color,
+          transform: `translate(100%, -50%)`,
           width: "5rem",
           height: "1.5rem",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          color: "#ffffff",
+          zIndex: "999",
           borderRadius: "4px",
           fontSize: ".75rem",
-          transform: `translate(100%, -50%)`
+          color: "#fff"
         }}
         onClick={() => {
           if (flowInstance && onConnectorClick) {

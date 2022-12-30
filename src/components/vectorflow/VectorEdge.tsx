@@ -1,21 +1,23 @@
-import { FC, memo, useContext } from "react";
-import { EdgeProps, getSmoothStepPath } from "reactflow";
+import { FC, memo, useContext, useEffect, useState } from "react";
+import { EdgeProps, getSmoothStepPath, EdgeLabelRenderer } from "reactflow";
 import { FlowContext } from ".";
 
 const VectorEdge: FC<EdgeProps> = ({
   id,
   source,
+  target,
   sourceX,
   sourceY,
   sourcePosition,
   targetPosition,
   targetX,
   targetY,
+  data,
   markerEnd
 }) => {
   const { data: flowData } = useContext(FlowContext);
 
-  const [edgePath] = getSmoothStepPath({
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,

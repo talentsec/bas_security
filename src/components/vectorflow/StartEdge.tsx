@@ -1,4 +1,4 @@
-import { FC, memo } from "react";
+import React, { FC, memo } from "react";
 import { EdgeProps, getSmoothStepPath, EdgeLabelRenderer } from "reactflow";
 
 export type StartEdgeProps = EdgeProps & {
@@ -13,6 +13,7 @@ const StartEdge: FC<EdgeProps> = ({
   targetPosition,
   targetX,
   targetY,
+  data,
   markerEnd
 }) => {
   const [edgePath, labelX, labelY] = getSmoothStepPath({

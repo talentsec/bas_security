@@ -21,6 +21,7 @@ import StartNode from "./StartNode";
 import StartEdge from "./StartEdge";
 import EndEdge from "./EndEdge";
 import { CustomEdgeData, CustomNodeData, FlowContext } from ".";
+import { isInChain, isLinked } from "./utils";
 
 export type VectorNodeProps = {
   label: string;
@@ -82,28 +83,20 @@ const VectorFlow = () => {
       const sourceNode = nodes.find(n => n.id === params.source);
       const targetNode = nodes.find(n => n.id === params.target);
 
-      const isLinked = edges.find(
-        e =>
-          (e.target === sourceNode?.id && e.source === targetNode?.id) ||
-          (e.source === targetNode?.id && e.target === sourceNode?.id)
-      );
-      if (isLinked) {
-        return;
-      }
-
       if (sourceNode && targetNode && params.source && params.target) {
         const newEdge: Edge<CustomEdgeData> = {
           id: `${params.source}-${params.target}`,
           source: params.source,
           target: params.target
         };
+        const inChain = isInChain(sourceNode, targetNode, nodes, edges);
+        if (inChain) {
+          return;
+        }
+
         if (sourceNode.type === "vector" && targetNode.type === "vector") {
           newEdge.type = "vector";
-          newEdge.data = {
-            // data: {
-            // configured: false,
-            // },
-          };
+          newEdge.data = {};
           return setEdges(eds => addEdge(newEdge, eds));
         } else if (sourceNode.type === "start" && targetNode.type === "vector") {
           newEdge.type = "start";
@@ -116,7 +109,7 @@ const VectorFlow = () => {
         }
       }
     },
-    [setEdges, nodes]
+    [setEdges, nodes, edges]
   );
 
   const onInit = (_reactFlowInstance: ReactFlowInstance) => {

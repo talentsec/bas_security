@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { Handle, Position } from "reactflow";
 import add from "../../assets/add.svg";
 

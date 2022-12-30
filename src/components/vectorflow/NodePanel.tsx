@@ -35,6 +35,12 @@ const checkFlowData = (
 } => {
   const startNode = nodes.find(n => n.type === "start");
   const endNode = nodes.find(n => n.type === "end");
+  const vectorNodes = nodes.filter(n => n.type !== "end" && n.type !== "start");
+
+  const haveIsolatedNode = vectorNodes.some(n => {
+    return edges.findIndex(e => e.source === n.id) === -1;
+  });
+
   if (!(startNode && endNode)) {
     return {
       success: false,
@@ -44,6 +50,11 @@ const checkFlowData = (
     return {
       success: false,
       error: "没有连接开始和结束节点！"
+    };
+  } else if (haveIsolatedNode) {
+    return {
+      success: false,
+      error: "存在没有连接到结束或其他向量的向量的节点！"
     };
   } else {
     return {

@@ -41,7 +41,7 @@ export default function DetailDrawer({ id, open, onClose }: DetailDrawerPropsTyp
           <div className="flex flex-col gap-4 p-4">
             <section>名称：{data.name}</section>
             <section>版本：{data.version}</section>
-            <section>适用平台{data.platform}</section>
+            <section>适用平台{data.platforms.join("、")}</section>
             <section>向量描述：{data.remark || "--"}</section>
             <section>执行权限：{data.roleType === "ADMIN" ? "管理员权限" : "普通权限"}</section>
             <section>ATT&CK ID：{data.attCkID}</section>

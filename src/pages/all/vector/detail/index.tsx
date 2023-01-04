@@ -20,7 +20,6 @@ import DeleteModal from "./DeleteModal";
 import PublishModal from "./PublishModal";
 import RevorkModal from "./RevorkModal";
 import { useAppSelector } from "@/hooks/redux";
-import DetailDrawer from "./DetailDrawer";
 
 type EditType = "publish" | "edit" | "revork" | "delete";
 
@@ -271,10 +270,6 @@ function VectorDetail() {
   };
   const togglePublishModal = () => {
     setPublishModalVisible(!publishModalVisible);
-  };
-
-  const toggleDetailDrawer = () => {
-    setDetailDrawerOpen(!detailDrawerOpen);
   };
 
   const toggleModal = () => {

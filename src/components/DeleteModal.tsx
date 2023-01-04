@@ -5,12 +5,14 @@ interface RenameModalPropsType {
   open: boolean;
   handleOk: () => void;
   handleCancel?: () => void;
+  message?: string;
+  title?: string;
 }
 
-function DeleteModal({ open, handleOk, handleCancel }: RenameModalPropsType) {
+function DeleteModal({ open, handleOk, handleCancel, message, title }: RenameModalPropsType) {
   return (
     <Modal
-      title="确认信息"
+      title={title || "确认信息"}
       open={open}
       onOk={() => handleOk()}
       onCancel={handleCancel}
@@ -18,7 +20,7 @@ function DeleteModal({ open, handleOk, handleCancel }: RenameModalPropsType) {
       cancelText="取消"
       destroyOnClose
     >
-      <div className="py-8">确认删除此场景吗？</div>
+      <div className="py-8">{message}</div>
     </Modal>
   );
 }

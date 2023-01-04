@@ -15,6 +15,8 @@ interface Form {
 }
 
 const LoginPannel = ({ jumpToRegister, success }: LoginPannelPropsType) => {
+  const [form] = Form.useForm();
+
   const { mutate } = useMutation(LoginApi, {
     onSuccess: data => {
       if (data.code === RequestStateEnum.SUCCESS) {
@@ -44,7 +46,7 @@ const LoginPannel = ({ jumpToRegister, success }: LoginPannelPropsType) => {
       <section className="text-blue-500 text-center text-lg mb-8">密码登录</section>
       <section>
         <Form
-          name="basic"
+          form={form}
           labelCol={{ span: 8 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ remember: true }}

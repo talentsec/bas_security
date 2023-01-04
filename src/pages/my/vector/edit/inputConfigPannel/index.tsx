@@ -27,9 +27,12 @@ function InputConfigPannel({ value, onChange }: InputConfigPannelProps) {
 
   return (
     <div>
-      <Button type="dashed" onClick={showDrawer} className="bg-gray-100 px-8">
+      <div
+        onClick={showDrawer}
+        className="bg-gray-100 px-8 py-1 rounded inline-block border border-dashed cursor-pointer"
+      >
         配置
-      </Button>
+      </div>
       <SiteDrawer
         title="输入配置"
         destroyOnClose

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import VectorFlow, { CustomNodeData, FlowData } from "../../components/vectorflow";
 
 const CustomNodeList: CustomNodeData[] = [
@@ -65,27 +65,25 @@ function App() {
   });
 
   return (
-    <div className="w-full h-full p-4">
+    <div className="w-4/5 h-4/5 p-4">
       <VectorFlow
+        simple={false}
         data={initialValues}
         presetNodes={CustomNodeList}
         onChange={(t, d) => {
-          // console.log('flow change', t, d)
+          // console.log("flow change", t, d);
         }}
-        onConnectorClick={(n, c, o) => {
+        onEdgeClick={(p, c) => {
           // todo
-          // console.log(2333333, n, c, o)
-
-          o.nodes.forEach(e => {
-            console.log("eeeee", e);
-            if (e.id === n.id) {
+          console.log(p, c);
+          c.edges.forEach(e => {
+            if (e.id === p.id) {
               e.data = {
-                ...e.data,
-                connectorId: "conncccc-111"
+                configured: true
               };
             }
           });
-          setInitialValues({ ...o });
+          setInitialValues({ ...c });
         }}
         onSave={(s, d, e) => {
           // todo

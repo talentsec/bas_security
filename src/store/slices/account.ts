@@ -4,7 +4,8 @@ import storage from "@/utils/storage";
 
 interface AccountState {
   hasLogin: boolean;
-  user: ResponseType.GetUserDetail | null;
+  // user: ResponseType.GetUserDetail | null;
+  user: any;
 }
 
 const initialState: AccountState = {
@@ -16,7 +17,11 @@ const AccountSlice = createSlice({
   name: "account",
   initialState,
   reducers: {
-    setUser: (state, Action: PayloadAction<ResponseType.GetUserDetail>) => {
+    setUser: (
+      state,
+      Action: PayloadAction<any>
+      //Action: PayloadAction<ResponseType.GetUserDetail>
+    ) => {
       state.user = Action.payload;
     },
     setLoginState: (state, Action: PayloadAction<boolean>) => {

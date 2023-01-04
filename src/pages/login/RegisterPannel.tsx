@@ -4,7 +4,7 @@ import { GetCaptcha, Register } from "@/api/account";
 import { useMutation, useQuery } from "react-query";
 import { RequestStateEnum } from "@/type/api";
 
-const BaseUrl = "http://10.10.10.242:8051";
+const BaseUrl = "http://10.10.10.242:8051/api";
 
 interface RegisterPannelPropsType {
   jumpToLogin: () => void;

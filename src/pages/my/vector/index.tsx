@@ -5,11 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import SearchIcon from "@iconify/icons-icon-park-outline/search";
 import { PlusOutlined, ProfileFilled, MoreOutlined, DeleteFilled, EyeFilled, EditFilled } from "@ant-design/icons";
-import RenameModal from "./components/RenameModal";
-import DeleteModal from "./components/DeleteModal";
+import RenameModal from "@/components/RenameModal";
+import DeleteModal from "@/components/DeleteModal";
 import type { ColumnsType } from "antd/es/table";
 import { GetMyVectorList, UpdateVector, DeleteVector } from "@/api/vector";
 import { RequestStateEnum } from "@/type/api";
+import { title } from "process";
 
 interface TableDateType {
   id: number;
@@ -224,12 +225,16 @@ const Index = () => {
           <Input placeholder="搜索关键词" suffix={<Icon icon={SearchIcon} />} onPressEnter={handleKeywordChange} />
         </section>
         <section
-          className="flex items-center bg-gray-50 w-52 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer"
+          className="flex items-center bg-gray-50 w-52 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer h-14"
           onClick={creatVector}
         >
-          <ProfileFilled className="text-orange-500 " />
-          <span className="mr-10 ml-2">创建攻击向量</span>
-          <PlusOutlined />
+          <span className="flex justify-between w-full ">
+            <span>
+              <ProfileFilled className="text-orange-500 " />
+              <span className="mr-10 ml-2">创建攻击向量</span>
+            </span>
+            <PlusOutlined />
+          </span>
         </section>
         <Table
           columns={columns}
@@ -254,7 +259,12 @@ const Index = () => {
         />
       </section>
       <RenameModal open={renameModalVisible} handleOk={handleRename} handleCancel={toggleRenameModal}></RenameModal>
-      <DeleteModal open={deleteModalVisible} handleOk={handleDelete} handleCancel={toggleDeleteModal}></DeleteModal>
+      <DeleteModal
+        open={deleteModalVisible}
+        handleOk={handleDelete}
+        handleCancel={toggleDeleteModal}
+        message="您确定删除该向量吗？"
+      ></DeleteModal>
     </div>
   );
 };

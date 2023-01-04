@@ -5,9 +5,11 @@ interface RenameModalPropsType {
   open: boolean;
   handleOk: (arg: string) => void;
   handleCancel?: () => void;
+  message?: string;
+  title?: string;
 }
 
-function RenameModal({ open, handleOk, handleCancel }: RenameModalPropsType) {
+function RenameModal({ open, handleOk, handleCancel, message, title }: RenameModalPropsType) {
   const [name, setName] = useState("");
 
   const handleInput: React.ChangeEventHandler<HTMLInputElement> = arg => {
@@ -15,7 +17,7 @@ function RenameModal({ open, handleOk, handleCancel }: RenameModalPropsType) {
   };
   return (
     <Modal
-      title="修改场景名称"
+      title={title || "重新命名"}
       open={open}
       onOk={() => handleOk(name)}
       onCancel={handleCancel}
@@ -24,7 +26,7 @@ function RenameModal({ open, handleOk, handleCancel }: RenameModalPropsType) {
       destroyOnClose
     >
       <div className="py-8">
-        <Input placeholder="请输入场景新名称" onChange={handleInput}></Input>
+        <Input placeholder={message || "请输入新名称"} onChange={handleInput}></Input>
       </div>
     </Modal>
   );

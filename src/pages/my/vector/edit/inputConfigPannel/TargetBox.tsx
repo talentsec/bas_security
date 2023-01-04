@@ -280,11 +280,8 @@ export const StatefulTargetBox: FC<PropsType> = props => {
     return res;
   };
 
-  console.log(errlist, 333);
-
   const handleConfirm = () => {
     const errorList = getErrorList();
-    console.log(errorList, 444);
 
     if (!errorList.length) {
       setErrList([]);

@@ -7,4 +7,5 @@ interface ImportMetaEnv {
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+  readonly BASE_URL: string;
 }

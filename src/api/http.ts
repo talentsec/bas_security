@@ -29,7 +29,7 @@ basHttp.interceptors.response.use(
           return response.data;
         } else {
           message.error(response.data.msg);
-          return response.data;
+          return Promise.reject();
         }
       case 401:
         message.warning("鉴权失败");

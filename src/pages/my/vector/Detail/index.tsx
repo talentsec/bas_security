@@ -24,7 +24,7 @@ type EditType = "publish" | "edit" | "revork" | "delete";
 
 interface EditMenuPropsMenu {
   edit: (arg: EditType) => void;
-  state: VectorPublishStateType;
+  state: PublishStateType;
 }
 const EditMenu = ({ edit, state }: EditMenuPropsMenu) => {
   const fullEditList: any[] = [
@@ -53,7 +53,7 @@ const EditMenu = ({ edit, state }: EditMenuPropsMenu) => {
       )
     }
   ];
-  const StateEditMap: Record<VectorPublishStateType, number[]> = {
+  const StateEditMap: Record<PublishStateType, number[]> = {
     AUDIT_REJECT: [0, 2, 3],
     DRAFT: [0, 2, 3],
     PUBLISHED: [2, 3],
@@ -79,7 +79,7 @@ const EditMenu = ({ edit, state }: EditMenuPropsMenu) => {
   );
 };
 
-const StateColorMap: Record<VectorPublishStateType, string> = {
+const StateColorMap: Record<PublishStateType, string> = {
   AUDIT_REJECT: "text-red-700",
   DRAFT: "text-gray-600",
   PUBLISHED: "text-blue-700",
@@ -92,7 +92,7 @@ function VectorDetail() {
   const [searchParams] = useSearchParams();
   const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState<undefined | VectorPublishStateType>(undefined);
+  const [filterStatus, setFilterStatus] = useState<undefined | PublishStateType>(undefined);
   const [curVector, setCurVector] = useState<null | ResponseType.GetVectorDetailContent>(null);
   const [revorkModalVisible, setRevorkModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -116,7 +116,7 @@ function VectorDetail() {
     // {
     //   title: "发布检查",
     //   dataIndex: "status",
-    //   render: (_: VectorPublishStateType) => <span className={StateColorMap[_]}>{VectorPublishStateMap[_]}</span>
+    //   render: (_: PublishStateType) => <span className={StateColorMap[_]}>{VectorPublishStateMap[_]}</span>
     // },
     {
       title: "发布状态",
@@ -140,7 +140,7 @@ function VectorDetail() {
         }
       ],
       filterMultiple: false,
-      render: (_: VectorPublishStateType) => <span className={StateColorMap[_]}>{VectorPublishStateMap[_]}</span>
+      render: (_: PublishStateType) => <span className={StateColorMap[_]}>{VectorPublishStateMap[_]}</span>
     },
     {
       title: "操作",

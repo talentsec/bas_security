@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { HomeOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined, PoweroffOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Layout, Menu, Modal, Result, Button } from "antd";
@@ -19,16 +19,30 @@ function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode,
   } as MenuItem;
 }
 
+const MenuPathList = [
+  "/app/my/vector",
+  "/app/my/scenario",
+  "/app/my/template",
+  "/app/all/vector",
+  "/app/all/scenario",
+  "/app/all/template"
+];
+
+const GetMatchPath = (path: string) => {
+  const res = MenuPathList.find(item => path.startsWith(item));
+  return res || MenuPathList[0];
+};
+
 const items: MenuProps["items"] = [
   getItem("我的", "my", <HomeOutlined />, [
-    getItem("攻击向量", "/app/my/vector"),
-    getItem("攻击场景", "/app/my/scenario"),
-    getItem("攻击任务", "/app/my/job")
+    getItem("攻击向量", MenuPathList[0]),
+    getItem("攻击场景", MenuPathList[1]),
+    getItem("任务模板", MenuPathList[2])
   ]),
   getItem("所有", "all", <MailOutlined />, [
-    getItem("攻击向量", "/app/all/vector"),
-    getItem("攻击场景", "/app/all/scenario"),
-    getItem("任务模版", "/app/all/job")
+    getItem("攻击向量", MenuPathList[3]),
+    getItem("攻击场景", MenuPathList[4]),
+    getItem("任务模版", MenuPathList[5])
   ])
 ];
 
@@ -45,10 +59,10 @@ const LogoutModal: React.FC<LogoutModal> = ({ open, onCancel, onOk }) => {
         subTitle="您确定要退出登录吗？"
         extra={
           <div>
-            <Button key="console" className="mr-4" onClick={onCancel}>
+            <Button key="1" className="mr-4" onClick={onCancel}>
               取消
             </Button>
-            <Button type="primary" danger key="console" onClick={onOk}>
+            <Button type="primary" key="2" danger onClick={onOk}>
               确定
             </Button>
           </div>
@@ -68,9 +82,11 @@ const BaseLayout = ({ children }: LayoutProps) => {
   const [, logout] = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [initPath] = useState(Location.pathname);
+  const [selectedKey, setSelectedKey] = useState(GetMatchPath(Location.pathname));
+  const [initPath] = useState<string>(GetMatchPath(Location.pathname));
 
   const handleSelectedChanged = ({ key }: any) => {
+    setSelectedKey(key);
     Navigator(`${key}`);
   };
 
@@ -86,6 +102,11 @@ const BaseLayout = ({ children }: LayoutProps) => {
   const toggleModalDisplay = () => {
     setModalOpen(!modalOpen);
   };
+
+  useEffect(() => {
+    setSelectedKey(GetMatchPath(Location.pathname));
+    console.log(Location);
+  }, [Location]);
 
   return (
     <Layout className="h-screen">
@@ -119,18 +140,21 @@ const BaseLayout = ({ children }: LayoutProps) => {
         <Menu
           theme="light"
           defaultSelectedKeys={[initPath]}
+          selectedKeys={[selectedKey]}
           mode="inline"
           items={items}
           onSelect={handleSelectedChanged}
         />
       </Sider>
-      <Layout className="h-screen site-layout">
+      <div className="h-screen site-layout w-full">
         {/* <Header style={{ padding: 0, background: colorBgContainer }} /> */}
-        <div className="h-14 bg-white flex-shrink-0"></div>
+        <div className="h-14 bg-white"></div>
         <LayoutContext.Provider value={collapsed}>
-          <Content>{children}</Content>
+          <Content style={{ height: "calc(100vh - 56px)" }} className="">
+            {children}
+          </Content>
         </LayoutContext.Provider>
-      </Layout>
+      </div>
       <LogoutModal open={modalOpen} onOk={confirmLogout} onCancel={toggleModalDisplay}></LogoutModal>
     </Layout>
   );

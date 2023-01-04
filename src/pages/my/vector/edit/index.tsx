@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation } from "react-query";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import { LeftOutlined, InboxOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import { Button, Steps, Form, Result, Input, Select, Divider, Upload, Alert, message, Spin } from "antd";
+import { useSearchParams } from "react-router-dom";
+import { LeftOutlined, MinusCircleOutlined } from "@ant-design/icons";
+import { Button, Steps, Form, Result, Input, Select, Divider, Alert, Spin, Cascader } from "antd";
 import { GetVectorVersionDetail, CreateVector, CreateVectorVersions, UpdateVectorVersions } from "@/api/vector";
 import { GetDictData } from "@/api/dict";
-import type { UploadProps } from "antd";
 import InputConfigPannel from "./inputConfigPannel";
 import OutputConfigPannel from "./outputConfigPannel";
+import UploadFile from "@/components/UploadFile";
 import { RequestStateEnum } from "@/type/api";
+import { GetAttackList } from "@/api/attack";
 import { cloneDeep } from "lodash-es";
+import { EditModeType, EditModeEnum } from "@/type/common";
+import { useAppSelector } from "@/hooks/redux";
 
 const StepItems = [
   {
@@ -24,51 +27,33 @@ const StepItems = [
 ];
 
 const DefaultContents = {
-  inputConfig: {
-    content: []
-  },
   os: "",
+  filePath: "",
   osArch: [],
   osVersion: [],
-  outputConfig: {
-    content: []
-  },
   url: ""
 };
 
 const InitFom: RequestType.CreateVector = {
-  attCkCategory: "",
-  attCkID: "",
-  categoryID: "",
+  attackIDs: [],
   contents: [cloneDeep(DefaultContents)],
   execMode: "LOCAL",
   name: "",
-  platform: "",
   remark: "",
   roleType: "NORMAL",
   targetRangeURL: "",
-  version: ""
-};
-
-const { Dragger } = Upload;
-
-const props: UploadProps = {
-  name: "file",
-  multiple: true,
-  action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-  onChange(info) {
-    const { status } = info.file;
-    if (status !== "uploading") {
-      console.log(info.file, info.fileList);
-    }
-    if (status === "done") {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
+  version: "",
+  inputConfig: {
+    content: []
   },
-  onDrop(e) {
-    console.log("Dropped files", e.dataTransfer.files);
+  outputConfig: {
+    content: [
+      {
+        name: "",
+        type: "",
+        content: ""
+      }
+    ]
   }
 };
 
@@ -87,18 +72,23 @@ const CheckContents = (value: any) => {
   });
   return !errorList.length;
 };
-enum EditModeEnum {
-  CREATE_VECTOR = "CREATE_VECTOR",
-  CREATE_VERSION = "CREATE_VERSION",
-  EDIT_VERSION = "EDIT_VERSION",
-  CREATE_VERSION_BASE_EXIST = "CREATE_VERSION_BASE_EXIST"
-}
 
-type EditModeType =
-  | EditModeEnum.CREATE_VECTOR
-  | EditModeEnum.CREATE_VERSION
-  | EditModeEnum.CREATE_VERSION_BASE_EXIST
-  | EditModeEnum.EDIT_VERSION;
+const transAttackList = (value: any[]): any[] => {
+  return value.map(item => {
+    if (item.techs && item.techs.length) {
+      return {
+        label: item.attackNameCN || item.attackName,
+        value: item.attackID,
+        children: transAttackList(item.techs)
+      };
+    } else {
+      return {
+        label: item.attackNameCN || item.attackName,
+        value: item.attackID
+      };
+    }
+  });
+};
 
 function EditVectorPage() {
   const [searchParams] = useSearchParams();
@@ -106,17 +96,24 @@ function EditVectorPage() {
     InitFom
   );
   const [curStep, setCurStep] = useState(0);
-  const [editMode, setEditMode] = useState<EditModeType>(EditModeEnum.CREATE_VECTOR);
+  const [editMode, setEditMode] = useState<EditModeType>(EditModeEnum.CREATE);
   const [dictKey, setDictKey] = useState("os");
   const [osList, setOsList] = useState<{ label: string; value: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [readonly, setReadonly] = useState(false);
   const [osVersionMap, setOsVersionMap] = useState<Record<string, { label: string; value: string }[]>>({});
 
-  const Navigator = useNavigate();
   const id = searchParams.get("id");
   const versionID = searchParams.get("v");
   const [form] = Form.useForm();
   const contents = Form.useWatch("contents", form);
+  const user = useAppSelector(state => state.account.user);
+
+  useEffect(() => {
+    if (user && formData && versionID) {
+      setReadonly(user.id !== (formData as ResponseType.GetVectorVersionDetailContent).createdBy);
+    }
+  }, [formData, user]);
 
   useQuery(["vector-version-detail"], () => GetVectorVersionDetail(versionID as string), {
     select: data => {
@@ -136,6 +133,12 @@ function EditVectorPage() {
     }
   });
 
+  const { data: attackList } = useQuery(["attack-list"], GetAttackList, {
+    select(data) {
+      return transAttackList(data.data || []);
+    }
+  });
+
   useEffect(() => {
     if (id && versionID) {
       setEditMode(EditModeEnum.CREATE_VERSION_BASE_EXIST);
@@ -145,12 +148,12 @@ function EditVectorPage() {
       setEditMode(EditModeEnum.CREATE_VERSION);
       setIsLoading(false);
     } else {
-      setEditMode(EditModeEnum.CREATE_VECTOR);
+      setEditMode(EditModeEnum.CREATE);
       setIsLoading(false);
     }
   }, []);
 
-  useQuery(["dictData", dictKey], () => GetDictData(dictKey), {
+  useQuery(["dictData", dictKey], () => GetDictData(dictKey === "os" ? dictKey : dictKey + "Version"), {
     onSuccess: data => {
       if (data.code === RequestStateEnum.SUCCESS) {
         if (dictKey === "os") {
@@ -159,7 +162,7 @@ function EditVectorPage() {
         } else {
           setOsVersionMap({
             ...osVersionMap,
-            dictKey: (data?.data || []).map(item => ({ label: item.name, value: item.value }))
+            [dictKey]: (data?.data || []).map(item => ({ label: item.name, value: item.value }))
           });
         }
       } else {
@@ -218,7 +221,7 @@ function EditVectorPage() {
     const confirmData: any = cloneDeep(data);
 
     switch (editMode) {
-      case EditModeEnum.CREATE_VECTOR:
+      case EditModeEnum.CREATE:
         CreateVectorMutate(data);
         break;
       case EditModeEnum.CREATE_VERSION:
@@ -255,6 +258,11 @@ function EditVectorPage() {
     setCurStep(curStep - 1);
   };
 
+  const handlePlatformChange = (value: string, key: number) => {
+    setDictKey(value);
+    form.setFieldValue(["contents", key, "osVersion"], []);
+  };
+
   return (
     <div className="w-full h-full flex flex-col border-t">
       <section className="bg-white p-5 text-lg font-semibold flex justify-between mb-4 rounded-lg">
@@ -262,11 +270,11 @@ function EditVectorPage() {
           <span className="mr-4 hover:text-blue-500 cursor-pointer" onClick={handleBack}>
             <LeftOutlined />
           </span>
-          <span>{"" || "未命名向量"}</span>
+          <span>{formData.name || "未命名向量"}</span>
           {/* <span className="text-gray-400 font-normal text-sm ml-2">｜新建攻击向量</span> */}
         </span>
         <span className="w-1/2 inline-block">
-          <Steps items={StepItems} current={curStep}></Steps>
+          {readonly ? null : <Steps items={StepItems} current={curStep}></Steps>}
         </span>
         <span className="w-1/4 inline-block"></span>
       </section>
@@ -281,19 +289,20 @@ function EditVectorPage() {
                 initialValues={formData}
                 name="dynamic_form_complex"
                 onFinish={onFinish}
+                disabled={readonly}
                 layout="vertical"
               >
                 <>
-                  <div className={`${curStep === 0 ? "block" : "hidden"}`}>
+                  <div className={`${curStep === 0 || readonly ? "block" : "hidden"}`}>
                     <Form.Item
                       name="name"
                       label="攻击向量"
-                      rules={[{ required: editMode === EditModeEnum.CREATE_VECTOR, message: "请输入名称" }]}
+                      rules={[{ required: editMode === EditModeEnum.CREATE, message: "请输入名称" }]}
                     >
-                      <Input placeholder="请输入名称" disabled={editMode !== EditModeEnum.CREATE_VECTOR} />
+                      <Input placeholder="请输入名称" disabled={editMode !== EditModeEnum.CREATE} />
                     </Form.Item>
                     <Form.Item name="version" label="版本号" rules={[{ required: true, message: "请输入版本号" }]}>
-                      <Input placeholder="请输入版本号" />
+                      <Input placeholder="请输入版本号" disabled={editMode === EditModeEnum.EDIT_VERSION} />
                     </Form.Item>
                     <Form.Item name="execMode" label="执行方式" rules={[{ required: true, message: "请选择执行方式" }]}>
                       <Select
@@ -323,6 +332,12 @@ function EditVectorPage() {
                         ]}
                       ></Select>
                     </Form.Item>
+                    <Form.Item name="inputConfig" label="输入配置" required>
+                      <InputConfigPannel />
+                    </Form.Item>
+                    <Form.Item name="outputConfig" label="输出配置" required>
+                      <OutputConfigPannel />
+                    </Form.Item>
                     <Divider></Divider>
                     <Form.List
                       name="contents"
@@ -332,7 +347,6 @@ function EditVectorPage() {
                             if (!values || values.length < 1) {
                               return Promise.reject(new Error("至少有一项配置内容"));
                             } else if (values.some((item: any) => !CheckContents(item))) {
-                              console.log(88888);
                               return Promise.reject(new Error("请将以上内容补充完整"));
                             }
                           }
@@ -348,9 +362,12 @@ function EditVectorPage() {
                             >
                               <div className="w-2/5">
                                 <Form.Item name={[field.name, "os"]} label="添加平台" required labelAlign="left">
-                                  <Select options={osList} onChange={value => setDictKey(value)}></Select>
+                                  <Select
+                                    options={osList}
+                                    onChange={value => handlePlatformChange(value, field.key)}
+                                  ></Select>
                                 </Form.Item>
-                                <Form.Item name={[field.name, "osVersion"]} label="选择版本" required>
+                                <Form.Item name={[field.name, "osVersion"]} label="选择版本" required initialValue={[]}>
                                   <Select
                                     mode="multiple"
                                     options={
@@ -377,27 +394,17 @@ function EditVectorPage() {
                                     ]}
                                   ></Select>
                                 </Form.Item>
+                                <Form.Item name={[field.name, "filePath"]} label="路径配置" required>
+                                  <Input></Input>
+                                </Form.Item>
                                 {/* <Form.Item name={[field.name, "inputConfig"]} label="输入" required>
                             {field.key}
                           </Form.Item> */}
-                                <Form.Item name={[field.name, "inputConfig"]} label="输入" required>
-                                  <InputConfigPannel />
-                                </Form.Item>
-                                <Form.Item name={[field.name, "outputConfig"]} label="输出" required>
-                                  <OutputConfigPannel />
-                                </Form.Item>
                               </div>
                               <div className="w-1/2">
                                 <MinusCircleOutlined onClick={() => remove(field.name)} className="float-right" />
                                 <Form.Item name={[field.name, "url"]} label="二进制文件" required labelAlign="left">
-                                  <Dragger {...props}>
-                                    <div className="p-28">
-                                      <p className="ant-upload-drag-icon">
-                                        <InboxOutlined />
-                                      </p>
-                                      <p className="ant-upload-hint">点击或拖拽上传文件</p>
-                                    </div>
-                                  </Dragger>
+                                  <UploadFile disabled={editMode === EditModeEnum.EDIT_VERSION}></UploadFile>
                                 </Form.Item>
                               </div>
                             </div>
@@ -431,10 +438,11 @@ function EditVectorPage() {
                         </Button>
                       }
                       showIcon
+                      className="mb-6"
                     ></Alert>
                   </div>
-                  <div className={`${curStep === 1 ? "block" : "hidden"}`}>
-                    <Form.Item name="attCkID" label="ATT&CK ID" rules={[{ required: true, message: "请输入attackID" }]}>
+                  <div className={`${curStep === 1 || readonly ? "block" : "hidden"}`}>
+                    {/* <Form.Item name="attCkID" label="ATT&CK ID" rules={[{ required: true, message: "请输入attackID" }]}>
                       <Input placeholder="请输入ATT&CK ID" />
                     </Form.Item>
                     <Form.Item name="categoryID" label="大类 ID" rules={[{ required: true, message: "请输入类别ID" }]}>
@@ -446,10 +454,15 @@ function EditVectorPage() {
                       rules={[{ required: true, message: "请输入ATT&CK 归类" }]}
                     >
                       <Input placeholder="请输入类别ID" />
+                    </Form.Item> */}
+                    <Form.Item
+                      name="attackIDs"
+                      label="ATT&CK"
+                      rules={[{ required: true, message: "请选择 ATT&CK 类别" }]}
+                    >
+                      <Cascader options={attackList} placeholder="请选择" />
                     </Form.Item>
-                    <Form.Item name="platform" label="适用平台" rules={[{ required: true, message: "请输入类别ID" }]}>
-                      <Input placeholder="请输入适用平台" />
-                    </Form.Item>
+
                     <Form.Item name="remark" label="描述" rules={[{ required: true, message: "请输入类别ID" }]}>
                       <Input placeholder="请输入描述" />
                     </Form.Item>
@@ -470,12 +483,14 @@ function EditVectorPage() {
             </div>
           )}
 
-          <div className={`bg-white p-4 flex justify-end gap-2 ${curStep !== 2 ? "block" : "hidden"}`}>
-            {curStep === 1 ? <Button onClick={prev}>上一步</Button> : null}
-            <Button type="primary" onClick={next}>
-              {curStep === 1 ? "提交" : "下一步"}
-            </Button>
-          </div>
+          {readonly ? null : (
+            <div className={`bg-white p-4 flex justify-end gap-2 ${curStep !== 2 ? "block" : "hidden"}`}>
+              {curStep === 1 ? <Button onClick={prev}>上一步</Button> : null}
+              <Button type="primary" onClick={next}>
+                {curStep === 1 ? "提交" : "下一步"}
+              </Button>
+            </div>
+          )}
         </section>
       </section>
     </div>

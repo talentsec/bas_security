@@ -1,8 +1,34 @@
 import React, { useState } from "react";
-import { Button, Form, Input, Space } from "antd";
+import { Button, Form, Input, Select } from "antd";
 import SiteDrawer from "@/components/SiteDrawer";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
+const options = [
+  {
+    value: "Number",
+    label: "数字"
+  },
+  {
+    value: "string",
+    label: "字符串"
+  },
+  {
+    value: "Array",
+    label: "数组"
+  },
+  {
+    value: "Boolean",
+    label: "布尔型"
+  },
+  {
+    value: "null",
+    label: "null"
+  },
+  {
+    value: "Object",
+    label: "对象"
+  }
+];
 interface InputConfigPannelProps {
   value?: any;
   onChange?: any;
@@ -37,11 +63,14 @@ function InputConfigPannel({ value, onChange }: InputConfigPannelProps) {
 
   return (
     <div>
-      <Button type="dashed" onClick={showDrawer} className="bg-gray-100 px-8">
+      <div
+        onClick={showDrawer}
+        className="bg-gray-100 px-8 py-1 rounded inline-block border border-dashed cursor-pointer"
+      >
         配置
-      </Button>
+      </div>
       <SiteDrawer
-        title="输入配置"
+        title="输出配置"
         destroyOnClose
         onClose={onClose}
         open={open}
@@ -96,10 +125,28 @@ function InputConfigPannel({ value, onChange }: InputConfigPannelProps) {
                             )}
                           </Form.Item>
                           <Form.Item
+                            noStyle
+                            shouldUpdate={(prevValues, curValues) =>
+                              prevValues.area !== curValues.area || prevValues.sights !== curValues.sights
+                            }
+                          >
+                            {() => (
+                              <Form.Item
+                                {...field}
+                                name={[field.name, "type"]}
+                                label={"输出类型"}
+                                rules={[{ required: true, message: "请填写输出类型" }]}
+                              >
+                                <Select options={options}></Select>
+                              </Form.Item>
+                            )}
+                          </Form.Item>
+
+                          <Form.Item
                             {...field}
                             name={[field.name, "content"]}
-                            label={"输出内容"}
-                            rules={[{ required: true, message: "请填写输出内容" }]}
+                            label={"备注信息"}
+                            rules={[{ required: true, message: "请填写备注信息" }]}
                           >
                             <Input.TextArea />
                           </Form.Item>
@@ -129,7 +176,7 @@ function InputConfigPannel({ value, onChange }: InputConfigPannelProps) {
               <Button
                 className="float-right mr-4"
                 onClick={() => {
-                  onClose;
+                  onClose();
                 }}
               >
                 取消

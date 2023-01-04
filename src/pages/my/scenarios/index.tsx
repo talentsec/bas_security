@@ -4,9 +4,9 @@ import { useQuery, useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import SearchIcon from "@iconify/icons-icon-park-outline/search";
-import { PlusOutlined, ProfileFilled, MoreOutlined, DeleteFilled, EyeFilled, EditFilled } from "@ant-design/icons";
-import RenameModal from "./components/RenameModal";
-import DeleteModal from "./components/DeleteModal";
+import { PlusOutlined, MoreOutlined, DeleteFilled, EyeFilled, EditFilled } from "@ant-design/icons";
+import RenameModal from "../../../components/RenameModal";
+import DeleteModal from "../../../components/DeleteModal";
 import type { ColumnsType } from "antd/es/table";
 import { GetMyScenariosList, UpdateScenario, DeleteScenario } from "@/api/scenarios";
 import { RequestStateEnum } from "@/type/api";
@@ -73,7 +73,7 @@ const MyScene = () => {
 
   const columns: ColumnsType<TableDateType> = [
     {
-      title: "攻击向量名称",
+      title: "攻击场景名称",
       dataIndex: "name",
       key: "name"
     },
@@ -173,13 +173,13 @@ const MyScene = () => {
     }
   });
 
-  const handleEdit = (editType: EditType, vector: TableDateType) => {
+  const handleEdit = (editType: EditType, scenario: TableDateType) => {
     switch (editType) {
       case "rename":
         toggleRenameModal();
         break;
       case "detail":
-        Navigater(`/app/my/vector/${vector.id}?name=${vector.name}`);
+        Navigater(`/app/my/scenario/${scenario.id}?name=${scenario.name}`);
         break;
       case "delete":
         toggleDeleteModal();
@@ -187,7 +187,7 @@ const MyScene = () => {
       default:
         break;
     }
-    setCurScenario(vector);
+    setCurScenario(scenario);
   };
 
   const handleRename = (name: string) => {
@@ -225,12 +225,16 @@ const MyScene = () => {
           <Input placeholder="搜索关键词" suffix={<Icon icon={SearchIcon} />} onPressEnter={handleKeywordChange} />
         </section>
         <section
-          className="flex items-center bg-gray-50 w-52 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer"
+          className="flex items-center bg-gray-50 w-52 text-sm px-5 py-4 my-4 rounded-md hover:scale-105 cursor-pointer h-14"
           onClick={CreateScenario}
         >
-          <AddIcon />
-          <span className="mr-10 ml-2">创建攻击场景</span>
-          <PlusOutlined />
+          <span className="flex justify-between w-full">
+            <span className="flex justify-center">
+              <AddIcon />
+              <span className="mr-10 ml-2">创建攻击场景</span>
+            </span>
+            <PlusOutlined />
+          </span>
         </section>
         <Table
           columns={columns}
@@ -255,7 +259,12 @@ const MyScene = () => {
         />
       </section>
       <RenameModal open={renameModalVisible} handleOk={handleRename} handleCancel={toggleRenameModal}></RenameModal>
-      <DeleteModal open={deleteModalVisible} handleOk={handleDelete} handleCancel={toggleDeleteModal}></DeleteModal>
+      <DeleteModal
+        open={deleteModalVisible}
+        handleOk={handleDelete}
+        handleCancel={toggleDeleteModal}
+        message="您确定删除该场景吗？"
+      ></DeleteModal>
     </div>
   );
 };

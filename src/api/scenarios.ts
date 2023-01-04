@@ -16,7 +16,7 @@ export const GetMyScenariosList = (
 
 // 创建场景
 export const CreateScenario = (params: RequestType.GetScenariosList): Promise<ResponseWrapper<number>> => {
-  return http.post(`${BaseUrl}`, { params });
+  return http.post(`${BaseUrl}`, params);
 };
 
 // 创建新场景版本
@@ -25,21 +25,21 @@ export const CreateScenariosVersion = (data: RequestType.CreateScenariosVersion)
 };
 
 // 场景版本详情
-export const GetScenarioVersionDetail = (id: number): Promise<ResponseWrapper<number>> => {
-  return http.get(`${BaseUrl}/${id}`);
+export const GetScenarioVersionDetail = (id: number): Promise<ResponseType.GetScenarioVersionDetail> => {
+  return http.get(`${BaseUrl}/versions/${id}`);
 };
 
 // 更新场景版本
 export const UpdateScenarioVersion = (
   id: number,
   data: RequestType.UpdateScenarioVersion
-): Promise<ResponseType.GetScenarioVersionDetail> => {
-  return http.put(`${BaseUrl}/${id}`, data);
+): Promise<ResponseType.UpdateScenarioVersionDetail> => {
+  return http.put(`${BaseUrl}/versions/${id}`, data);
 };
 
 // 删除场景版本
 export const DeleteScenarioVersion = (id: number): Promise<ResponseWrapper<number>> => {
-  return http.delete(`${BaseUrl}/${id}`);
+  return http.delete(`${BaseUrl}/versions/${id}`);
 };
 
 // 审核场景版本
@@ -50,17 +50,12 @@ export const AuditScenarioVersion = (
     remark: string;
   }
 ): Promise<ResponseWrapper<number>> => {
-  return http.patch(`${BaseUrl}/${id}/audit`, data);
+  return http.patch(`${BaseUrl}/versions/${id}/audit`, data);
 };
 
 // 发布/撤销场景版本
-export const PublishScenarioVersion = (
-  id: number,
-  data: {
-    action: "PUBLISH" | "CANCEL";
-  }
-): Promise<ResponseWrapper<number>> => {
-  return http.patch(`${BaseUrl}/${id}/publish`, data);
+export const PublishScenarioVersion = (id: number, action: "PUBLISH" | "CANCEL"): Promise<ResponseWrapper<number>> => {
+  return http.patch(`${BaseUrl}/versions/${id}/publish`, { action });
 };
 
 // 场景详情
@@ -73,7 +68,7 @@ export const GetScenarioDetail = (
     status?: "DRAFT" | "IN_AUDIT" | "AUDIT_REJECT" | "PUBLISHED";
   }
 ): Promise<ResponseType.GetScenarioDetail> => {
-  return http.patch(`${BaseUrl}/${id}`, { params });
+  return http.get(`${BaseUrl}/${id}`, { params });
 };
 
 // 删除场景

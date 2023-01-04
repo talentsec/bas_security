@@ -14,7 +14,11 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
-      "@icon": path.resolve(__dirname, "src/assets/icon")
+      "@icon": path.resolve(__dirname, "src/assets/icon"),
+      stream: "stream-browserify",
+      path: "path-browserify",
+      timers: "timers-browserify",
+      buffer: "buffer"
     }
   },
   server: {
@@ -22,8 +26,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "http://10.10.10.242:8051/",
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, "")
+        changeOrigin: true
       }
     }
   }

@@ -27,6 +27,11 @@ export const GetUserDetail = (id: number): Promise<ResponseType.GetUserDetail> =
   return http.get(`${BaseUrl}/users/${id}`);
 };
 
+// 我的用户详情
+export const GetMyUserDetail = (): Promise<ResponseType.GetUserDetail> => {
+  return http.get(`${BaseUrl}/users/my`);
+};
+
 // 更新用户
 export const UpdateUser = (id: number, data: RequestType.UpdateUser): Promise<number> => {
   return http.patch(`${BaseUrl}/users/${id}`, data);

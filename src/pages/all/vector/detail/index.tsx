@@ -219,7 +219,7 @@ function VectorDetail() {
     onSuccess: data => {
       togglePublishModal();
       if (data.code === RequestStateEnum.SUCCESS) {
-        message.success(`发布成功`);
+        message.success(`发布请求发送成功`);
         refetch();
       } else {
         console.log(`发布失败`);

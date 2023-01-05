@@ -200,7 +200,6 @@ function EditScenarios() {
   };
 
   const handleConnectorChange = (url: string) => {
-    // TODO
     if (flow && curNode) {
       flow.nodes.forEach(e => {
         if (e.id === String(curNode.id)) {
@@ -337,9 +336,13 @@ function EditScenarios() {
             onSave={(s, d, e) => {
               // todo
 
+              console.log(s, d, e);
+
               if (!s) {
                 message.error(e);
-              } else if (d?.nodes.some(item => !(item as any).connectorId)) {
+              } else if (
+                d?.nodes.filter(item => item.type === "vector").some(item => !(item as any).data.connectorId)
+              ) {
                 message.error("请完善连接器配置");
               } else {
                 console.log(d);

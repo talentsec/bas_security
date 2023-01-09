@@ -11,7 +11,10 @@ export type CustomNodeData = {
   label: string;
   type: CustomType;
   // configured?: boolean
+  tag: string;
+  vectorId: string;
   connectorId?: any;
+  inputConfig?: any;
 };
 
 export type CustomEdgeData = {
@@ -43,6 +46,7 @@ export interface IProps {
   presetNodes: CustomNodeData[];
   onChange?: (type: "node" | "edge", data: any) => void;
   onConnectorClick?: (currentNode: CustomNodeData, edges: any[], flowData: FlowData) => void;
+  onNodeClick?: (currentNode: CustomNodeData, edges: any[], flowData: FlowData) => void;
   onClear?: () => void; // 清空
   onSave?: (success: boolean, data?: FlowData, error?: string) => void;
 }
@@ -54,7 +58,16 @@ interface StateProps extends IProps {
 
 export const FlowContext = createContext({} as StateProps);
 
-const VectorFlow: FC<IProps> = ({ presetNodes, simple, onChange, onConnectorClick, onClear, onSave, data }) => {
+const VectorFlow: FC<IProps> = ({
+  presetNodes,
+  simple,
+  onChange,
+  onConnectorClick,
+  onNodeClick,
+  onClear,
+  onSave,
+  data
+}) => {
   const [flowInstance, setFlowInstance] = useState<ReactFlowInstance | null>(null);
 
   return (
@@ -65,6 +78,7 @@ const VectorFlow: FC<IProps> = ({ presetNodes, simple, onChange, onConnectorClic
         presetNodes,
         onChange,
         onConnectorClick,
+        onNodeClick,
         onClear,
         onSave,
         data

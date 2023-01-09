@@ -17,6 +17,7 @@ import { RequestStateEnum } from "@/type/api";
 import { cloneDeep } from "lodash-es";
 import VectorFlow, { CustomNodeData, FlowData } from "@/components/vectorflow";
 import UploadModal from "./UploadModal";
+import VectorConfigModal from "./VectorConfigModal";
 
 interface VectorConfigType {
   connectorConfig?: {
@@ -51,9 +52,10 @@ function EditScenarios() {
   const [readonly, setReadonly] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [initialValues, setInitialValues] = useState<FlowData | undefined>(undefined);
-  const [CustomNodeList, setCustomNodeList] = useState<CustomNodeData[]>([]);
+  const [CustomNodeList, setCustomNodeList] = useState<any[]>([]);
   const [curNode, setCurNode] = useState<CustomNodeData | null>(null);
-  const [flow, setFlow] = useState<FlowData | null>(null);
+  const [flow, setFlow] = useState<FlowData | undefined>(undefined);
+  const [vectorModalDisplay, setVectorModalDisplay] = useState(false);
 
   const [form] = Form.useForm();
   const id = searchParams.get("id");
@@ -113,9 +115,9 @@ function EditScenarios() {
     {
       onSuccess: data => {
         if (data.code === RequestStateEnum.SUCCESS) {
-          message.success("创建成功");
+          message.success("修改成功");
         } else {
-          console.log("创建失败");
+          console.log("修改失败");
         }
       }
     }
@@ -134,6 +136,38 @@ function EditScenarios() {
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
+
+  const transContentData = () => {
+    const resList: any[] = [];
+    const sourceList = flow!.nodes
+      .filter(item => item.type === "vector")
+      .map(item => {
+        return {
+          vectorID: Number(item.data.vectorId),
+          items: [
+            {
+              connectorConfig: {
+                url: (item as any).data.connectorId
+              },
+              inputConfig: { content: item.data?.inputConfig || null },
+              tag: String(item.data.tag)
+            }
+          ]
+        };
+      });
+
+    sourceList.forEach(item => {
+      const targetIndex = resList.findIndex(res => res.vectorID === item.vectorID);
+      if (targetIndex >= 0) {
+        sourceList[targetIndex].items.push(item.items[0]);
+      } else {
+        resList.push(item);
+      }
+    });
+
+    return resList;
+  };
+
   const onFinish = (values: any) => {
     // Todo
     if (!flow) {
@@ -143,21 +177,12 @@ function EditScenarios() {
     if (!seletedVector.length) {
       message.error("向量选择不能为空");
     }
-    console.log(values);
     const confirmData: any = cloneDeep(values);
-    confirmData.compTechs = values.compTechs.split(",");
-    confirmData.capTests = values.capTests.split(",");
+    confirmData.compTechs = Array.isArray(values.compTechs) ? values.compTechs : values.compTechs.split(",");
+    confirmData.capTests = Array.isArray(values.capTests) ? values.capTests : values.capTests.split(",");
     confirmData.vectorGraph = flow;
-    confirmData.contents = flow.nodes
-      .filter(item => item.type === "vector")
-      .map(item => {
-        return {
-          vectorID: Number(item.id),
-          connectorConfig: {
-            url: (item as any).connectorId
-          }
-        };
-      });
+
+    confirmData.contents = transContentData();
 
     switch (editMode) {
       case EditModeEnum.CREATE:
@@ -186,7 +211,6 @@ function EditScenarios() {
 
   const handleVectorSelected = (list: VectorConfigType[]) => {
     setSelectedVector(list);
-    console.log(list);
     toggleModal();
   };
 
@@ -218,13 +242,40 @@ function EditScenarios() {
     setCurNode(currentNode);
     setFlow(flowData);
     toggleUploadModal();
+    console.log(currentNode, flowData);
+  };
+
+  const handleNodeClick = (currentNode: CustomNodeData) => {
+    setCurNode(currentNode);
+    toggleVectorModal();
+  };
+
+  const toggleVectorModal = () => {
+    setVectorModalDisplay(!vectorModalDisplay);
+  };
+
+  const handleVectorConfig = val => {
+    if (flow && curNode) {
+      flow.nodes.forEach(e => {
+        if (e.id === String(curNode.id)) {
+          e.data = {
+            ...e.data,
+            inputConfig: val
+          };
+        }
+      });
+      setInitialValues({ ...flow });
+    }
+    toggleVectorModal();
   };
 
   const confirm = () => {
     form.submit();
   };
 
-  console.log();
+  useEffect(() => {
+    setFlow(initialValues);
+  }, [initialValues]);
 
   return (
     <div className="flex flex-col h-full bg-gray-100">
@@ -326,17 +377,16 @@ function EditScenarios() {
             data={initialValues}
             presetNodes={CustomNodeList}
             onChange={(t, d) => {
-              // console.log('flow change', t, d)
+              // setInitialValues(d);
+              setFlow(d);
             }}
             onConnectorClick={handleConnectorConfig}
             onClear={() => {
-              console.log("clear");
-              setFlow(null);
+              setInitialValues(undefined);
             }}
+            onNodeClick={handleNodeClick}
             onSave={(s, d, e) => {
               // todo
-
-              console.log(s, d, e);
 
               if (!s) {
                 message.error(e);
@@ -347,7 +397,8 @@ function EditScenarios() {
               } else {
                 console.log(d);
                 message.success("保存成功");
-                setFlow(d as FlowData);
+                setInitialValues(d as FlowData);
+                console.log(d);
               }
               d && setInitialValues({ ...d });
             }}
@@ -373,6 +424,16 @@ function EditScenarios() {
         onCancel={toggleUploadModal}
         value={curNode?.connectorId}
       ></UploadModal>
+      {vectorModalDisplay && (
+        <VectorConfigModal
+          open={true}
+          onConfirm={handleVectorConfig}
+          onCancel={toggleVectorModal}
+          title={curNode?.label}
+          id={curNode?.vectorId}
+          originData={curNode}
+        ></VectorConfigModal>
+      )}
     </div>
   );
 }

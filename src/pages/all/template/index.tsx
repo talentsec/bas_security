@@ -100,11 +100,11 @@ const Index = () => {
       dataIndex: "pubNum",
       key: "pubNum"
     },
-    {
-      title: "模板引用次数",
-      dataIndex: "usedNum",
-      key: "usedNum"
-    },
+    // {
+    //   title: "模板引用次数",
+    //   dataIndex: "usedNum",
+    //   key: "usedNum"
+    // },
     {
       title: "最近发布时间",
       dataIndex: "pubTime",
@@ -221,7 +221,7 @@ const Index = () => {
   return (
     <div className="w-full h-full flex flex-col p-4">
       <Breadcrumb>
-        <Breadcrumb.Item>我的</Breadcrumb.Item>
+        <Breadcrumb.Item>所有</Breadcrumb.Item>
         <Breadcrumb.Item>任务模板</Breadcrumb.Item>
       </Breadcrumb>
       <section className="rounded-lg bg-white w-full flex-1 mt-4 p-6">

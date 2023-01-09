@@ -136,18 +136,24 @@ const VectorFlow = () => {
         y: event.clientY - reactFlowBounds.top
       });
 
+      const sameNodeCount = nodes.filter(item => item.data.vectorId === nodeData.id).length;
+
       const newNode: Node = {
-        id: nodeData.id,
+        id: nodeData.id + "-" + (sameNodeCount + 1),
         type: nodeData.type,
         position,
         data: {
-          ...nodeData
+          ...nodeData,
+          id: nodeData.id + "-" + (sameNodeCount + 1),
+          tag: sameNodeCount + 1,
+          vectorId: nodeData.id,
+          label: nodeData.label + "-" + (sameNodeCount + 1)
         }
       };
 
       setNodes(nds => [...nds, newNode]);
     },
-    [flowInstance]
+    [flowInstance, nodes]
   );
 
   // const onEdgeClick = useCallback(

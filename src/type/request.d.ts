@@ -92,8 +92,12 @@ declare namespace RequestType {
     capTests: string[];
     compTechs: string[];
     contents: {
-      connectorConfig: {
-        contents: any;
+      items: {
+        connectorConfig: {
+          contents: any;
+        };
+        inputConfig: any;
+        tag: string;
       };
       vectorID: number;
     }[];
@@ -283,10 +287,14 @@ declare namespace ResponseType {
     compTechs: string[];
     contents: [
       {
-        connectorConfig: {
-          contents: any;
+        items: {
+          connectorConfig: {
+            contents: any;
+          };
+          inputConfig: any;
+          tag: string;
         };
-        vectorVersionID: number;
+        vectorID: number;
       }
     ];
     remark: string;

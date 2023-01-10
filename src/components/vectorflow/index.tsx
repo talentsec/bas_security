@@ -11,8 +11,8 @@ export type CustomNodeData = {
   label: string;
   type: CustomType;
   // configured?: boolean
-  tag: string;
-  vectorId: string;
+  tag?: string;
+  vectorId?: string;
   connectorId?: any;
   inputConfig?: any;
 };

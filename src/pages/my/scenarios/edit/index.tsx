@@ -254,7 +254,7 @@ function EditScenarios() {
     setVectorModalDisplay(!vectorModalDisplay);
   };
 
-  const handleVectorConfig = val => {
+  const handleVectorConfig = (val: any) => {
     if (flow && curNode) {
       flow.nodes.forEach(e => {
         if (e.id === String(curNode.id)) {
@@ -404,11 +404,13 @@ function EditScenarios() {
             }}
           />
         </section>
-        <div className="flex justify-end p-4 bg-white mt-4">
-          <Button type="primary" onClick={confirm}>
-            保存
-          </Button>
-        </div>
+        {readonly ? null : (
+          <div className="flex justify-end p-4 bg-white mt-4">
+            <Button type="primary" onClick={confirm}>
+              保存
+            </Button>
+          </div>
+        )}
       </section>
       {modalVisible ? (
         <VectorModal

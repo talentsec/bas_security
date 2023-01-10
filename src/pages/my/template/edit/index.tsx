@@ -263,11 +263,13 @@ function EditScenarios() {
                   pagination={false}
                 ></Table>
               </div>
-              <section className="flex justify-end pt-40">
-                <Button className="" type="primary" onClick={handleConfirm}>
-                  提交
-                </Button>
-              </section>
+              {readonly ? null : (
+                <section className="flex justify-end pt-40">
+                  <Button className="" type="primary" onClick={handleConfirm}>
+                    提交
+                  </Button>
+                </section>
+              )}
             </div>
           )}
         </section>
